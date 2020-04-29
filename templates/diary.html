@@ -1,0 +1,29 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+{% extends "layout.html" %}
+{% block content %}
+    <div class="container" style="width: 800px; background: #f4f4f4; ">
+    <div class="row">
+  <div class="col-md-4">
+      <div style="text-align:center">
+        <h3><small>日记</small></h3>
+      </div>
+  </div>
+  <div class="col-md-4">
+      <div style="text-align:center">
+        <h3><small>2020年4月29日</small></h3>
+      </div>
+  </div>
+  <div class="col-md-4">
+      <div style="text-align:center">
+         <h3><small>天气 晴</small></h3>
+      </div>
+
+  </div>
+    </div>
+    <textarea data-minheight="70" tabindex="1" id="isay-cont" rows="1" style="height: 100px; width: 100%;"></textarea>
+    <div style="float: right; padding-bottom: 10px">
+        <button type="button" class="btn btn-default">发表</button>
+    </div>
+</div>
+{% endblock %}

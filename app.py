@@ -1,34 +1,33 @@
 from flask import Flask, session, redirect, url_for, request
-from markupsafe import escape
-
-app = Flask(__name__)
-
-# Set the secret key to some random bytes. Keep this really secret!
-app.secret_key = b'_5#y2L"F4Q8z\n\xec]/'
-
-@app.route('/')
-def index():
-    if 'username' in session:
-        return 'Logged in as %s' % escape(session['username'])
-    return 'You are not logged in'
-
-@app.route('/login', methods=['GET', 'POST'])
-def login():
-    if request.method == 'POST':
-        session['username'] = request.form['username']
-        return redirect(url_for('index'))
-    return '''
-        <form method="post">
-            <p><input type=text name=username>
-            <p><input type=submit value=Login>
-        </form>
-    '''
-
-@app.route('/logout')
-def logout():
-    # remove the username from the session if it's there
-    session.pop('username', None)
-    return redirect(url_for('index'))
+from werkzeug.utils import find_modules, import_string
 
 
-app.run()
+class Application(Flask):
+    def __init__(self, *args, **kwargs):
+        super(Application, self).__init__(__name__, *args, **kwargs)
+        self.url_map.strict_slashes = False
+        self.secret_key = b'_5#y2L"F4Q8z\n\xec]/'
+
+    def register_blueprints(self, root):
+        for name in find_modules(root, recursive=True):
+            mod = import_string(name)
+            if hasattr(mod, 'bp'):
+                self.register_blueprint(mod.bp)
+
+
+def date(datetime):
+    return datetime.strftime('%Y-%m-%d')
+
+
+def create_app(*args, **kwargs):
+    app = Application(*args, **kwargs)
+    app.register_blueprints('view')
+    app.jinja_env.filters['date'] = date
+    return app
+
+
+application = create_app()
+
+
+if __name__ == '__main__':
+    application.run("0.0.0.0", 80, debug=True)
