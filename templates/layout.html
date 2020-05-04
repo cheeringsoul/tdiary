@@ -7,61 +7,74 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="" />
     <meta name="keywords" content="" />
-    <link rel="stylesheet" type="text/css" href={{ url_for('static', filename='css/bootstrap.min.css') }}>
-    <link rel="stylesheet" type="text/css" href={{ url_for('static', filename='css/style.css') }}>
     {% endblock %}
   </head>
   <header>
       {% block header %}
-    <nav class="navbar navbar-default">
-  <div class="container" style="width: 800px">
-    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+    <nav class="navbar navbar-default" >
+    <div class="collapse navbar-collapse" style="padding-right: 0px; padding-left: 0px; width: 800px; margin:auto">
       <ul class="nav navbar-nav">
-        <li class="active"><a href="#">Link <span class="sr-only">(current)</span></a></li>
-        <li><a href="#">Link</a></li>
-        <li class="dropdown">
-          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Dropdown <span class="caret"></span></a>
-          <ul class="dropdown-menu">
-            <li><a href="#">Action</a></li>
-            <li><a href="#">Another action</a></li>
-            <li><a href="#">Something else here</a></li>
-            <li role="separator" class="divider"></li>
-            <li><a href="#">Separated link</a></li>
-            <li role="separator" class="divider"></li>
-            <li><a href="#">One more separated link</a></li>
-          </ul>
-        </li>
+        <li id="index"><a href={{ url_for('diary.diary') }} > 首页 </a></li>
       </ul>
-      <form class="navbar-form navbar-left">
-        <div class="form-group">
-          <input type="text" class="form-control" placeholder="Search">
-        </div>
-        <button type="submit" class="btn btn-default">Submit</button>
-      </form>
       <ul class="nav navbar-nav navbar-right">
-        <li><a href="#">Link</a></li>
+        <ul class="nav navbar-nav">
+          <li>
+            <a class="glyphicon glyphicon-send" title="发表日记" aria-hidden="true" style="font-size:x-large;color:#2ea92e" href={{ url_for('diary.create_diary') }} > </a>
+          </li>
+      </ul>
+        {% if session.get('current_user') %}
         <li class="dropdown">
-          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Dropdown <span class="caret"></span></a>
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+            {{ session['current_user']['name'] }}
+            <span class="caret"></span>
+          </a>
           <ul class="dropdown-menu">
             <li><a href="#">Action</a></li>
             <li><a href="#">Another action</a></li>
-            <li><a href="#">Something else here</a></li>
+            <li><a href="#">我的日记</a></li>
             <li role="separator" class="divider"></li>
-            <li><a href="#">Separated link</a></li>
+            <li><a href={{ url_for('account.logout') }}>退出</a></li>
           </ul>
         </li>
+        {% else %}
+        <ul class="nav navbar-nav">
+        <li id="login"><a href={{ url_for('account.login') }}>登陆</a></li>
+          <li id="signup"><a href={{ url_for('account.signup') }}>注册</a></li>
+          {% endif %}
       </ul>
-    </div>
+
+      </ul>
   </div>
 </nav>
-          {% endblock %}
+{% endblock %}
 </header>
+
   <body>
-{% block content %}{% endblock %}
+  <div class="container" style="width: 400px">
+      {% with messages = get_flashed_messages() %}
+  {% if messages %}
+
+    {% for message in messages %}
+    <div class="alert alert-danger" role="alert">
+        <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+        {{ message }}
+</div>
+{% endfor %}
+
+  {% endif %}
+{% endwith %}
+  </div>
+
+  {% block content %}
+
+{% endblock %}
 </body>
+
 </html>
 <script src={{ url_for('static', filename='js/jquery.min.js') }}></script>
 <script src={{ url_for('static', filename='js/bootstrap.min.js') }}></script>
-<script>
+<link rel="stylesheet" type="text/css" href={{ url_for('static', filename='css/bootstrap.min.css') }}>
+<link rel="stylesheet" type="text/css" href={{ url_for('static', filename='css/style.css') }}>
 
-</script>
+{% block script %}
+{% endblock %}

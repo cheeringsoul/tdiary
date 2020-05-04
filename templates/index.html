@@ -1,9 +1,7 @@
-﻿<!DOCTYPE html>
-<html lang="en">
+﻿
 {% extends "layout.html" %}
 {% block content %}
-    <div class="container" style="width: 800px">
-    <div class="row">
+    <div class="row" style="width:800px; margin:auto">
     <div class="media">
       <div class="media-left">
         <a href="#">
@@ -20,60 +18,46 @@
       <button type="button" class="btn btn-default">Right</button>
     </div>
     </div>
-    <hr style="margin-top: 6px;margin-bottom: 6px">
-        <div class="media">
-      <div class="media-left">
-        <a href="#">
-          <img class="avatar media-object" src={{ url_for('static', filename='img/btc.png') }} alt="...">
-        </a>
-      </div>
-      <div class="media-body">
-        <h4 class="media-heading">Media heading</h4>
-        程序员程序员程序员程序员程序员程序员
-      </div>
-        <div class="btn-group " role="group" style="float:right; margin-top: 15px">
-      <button type="button" class="btn btn-default">Left</button>
-      <button type="button" class="btn btn-default">Middle</button>
-      <button type="button" class="btn btn-default">Right</button>
-    </div>
-    </div>
-    <hr style="margin-top: 6px;margin-bottom: 6px">
-        <div class="media">
-      <div class="media-left">
-        <a href="#">
-          <img class="avatar media-object" src={{ url_for('static', filename='img/btc.png') }} alt="...">
-        </a>
-      </div>
-      <div class="media-body">
-        <h4 class="media-heading">Media heading</h4>
-        程序员程序员程序员程序员程序员程序员
-      </div>
-        <div class="btn-group " role="group" style="float:right; margin-top: 15px">
-      <button type="button" class="btn btn-default">Left</button>
-      <button type="button" class="btn btn-default">Middle</button>
-      <button type="button" class="btn btn-default">Right</button>
-    </div>
-    </div>
-    <hr style="margin-top: 6px;margin-bottom: 6px">
-        <div class="media">
-      <div class="media-left">
-        <a href="#">
-          <img class="avatar media-object" src={{ url_for('static', filename='img/btc.png') }} alt="...">
-        </a>
-      </div>
-      <div class="media-body">
-        <h4 class="media-heading">Media heading</h4>
-        程序员程序员程序员程序员程序员程序员
-      </div>
-        <div class="btn-group " role="group" style="float:right; margin-top: 15px">
-      <button type="button" class="btn btn-default">Left</button>
-      <button type="button" class="btn btn-default">Middle</button>
-      <button type="button" class="btn btn-default">Right</button>
-    </div>
-    </div>
-    <hr style="margin-top: 6px;margin-bottom: 6px">
 
-</div>
+    <hr style="margin-top: 6px;margin-bottom: 6px">
+<div class="media">
+      <div class="media-left">
+        <a href="#">
+          <img class="avatar media-object" src={{ url_for('static', filename='img/btc.png') }} alt="...">
+        </a>
+      </div>
+      <div class="media-body">
+        <h4 class="media-heading">Media heading</h4>
+        程序员程序员程序员程序员程序员程序员
+      </div>
+        <div class="btn-group " role="group" style="float:right; margin-top: 15px">
+      <button type="button" class="btn btn-default">Left</button>
+      <button type="button" class="btn btn-default">Middle</button>
+      <button type="button" class="btn btn-default">Right</button>
+    </div>
+    </div>
+        <hr style="margin-top: 6px;margin-bottom: 6px">
+<div class="media">
+      <div class="media-left">
+        <a href="#">
+          <img class="avatar media-object" src={{ url_for('static', filename='img/btc.png') }} alt="...">
+        </a>
+      </div>
+      <div class="media-body">
+        <h4 class="media-heading">Media heading</h4>
+        程序员程序员程序员程序员程序员程序员
+      </div>
+        <div class="btn-group " role="group" style="float:right; margin-top: 15px">
+      <button type="button" class="btn btn-default">Left</button>
+      <button type="button" class="btn btn-default">Middle</button>
+      <button type="button" class="btn btn-default">Right</button>
+    </div>
+    </div>
 </div>
 
+{% endblock %}
+{% block script %}
+<script>
+  $("#index").attr('class', 'active')
+</script>
 {% endblock %}

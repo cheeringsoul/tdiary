@@ -1,5 +1,8 @@
+from datetime import timedelta
 from flask import Flask, session, redirect, url_for, request
 from werkzeug.utils import find_modules, import_string
+
+from ext import csrf
 
 
 class Application(Flask):
@@ -7,6 +10,8 @@ class Application(Flask):
         super(Application, self).__init__(__name__, *args, **kwargs)
         self.url_map.strict_slashes = False
         self.secret_key = b'_5#y2L"F4Q8z\n\xec]/'
+        self.permanent_session_lifetime = timedelta(minutes=5)
+        csrf.init_app(self)
 
     def register_blueprints(self, root):
         for name in find_modules(root, recursive=True):
