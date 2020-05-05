@@ -2,3 +2,4 @@
 tdiary.db
 __pycache__/*
 tdiary-log.log
+*.pyc
