@@ -82,6 +82,8 @@ def like():
     if diary_id is None:
         current_app.logger.error('get empty diary id')
         return ""
+    if g.current_user is None:
+        """"""
     with open_db_session() as db_session:
         rv = db_session.query(Diary).get(diary_id)
         if not rv:
