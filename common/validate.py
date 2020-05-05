@@ -1,9 +1,12 @@
-from marshmallow import fields, Schema, validates, ValidationError, pre_load
+from marshmallow import fields, Schema, validates, ValidationError, pre_load, EXCLUDE
 
 
 class SchemaSplit(Schema):
-    """去掉所有字段首尾空格"""
+    class Meta:
+        """排除unknown fields"""
+        unknown = EXCLUDE
 
+    """去掉所有字段首尾空格"""
     @pre_load
     def process_author(self, data, **kwargs):
         result = {}
@@ -23,15 +26,15 @@ class DiarySchema(SchemaSplit):
 
     @validates("diary_content")
     def validate_weather(self, value):
-        if len(value) > 800:
+        if len(value) > 300:
             raise ValidationError("length of weather should less than 5 char.")
 
 
 class RegisterSchema(SchemaSplit):
     username = fields.Str(required=True)
+    email = fields.Email(required=True)
     password = fields.Str(required=True)
     password_repeated = fields.Str(required=True)
-    email = fields.Email(required=True)
 
     @validates('username')
     def validate_username(self, value):

@@ -31,7 +31,7 @@ class User(Base):
     id = Column(Integer, primary_key=True)
     name = Column(String(10), unique=True)
     password = Column(String(128))
-    email = Column(String(20), unique=True)
+    email = Column(String(50), unique=True)
     avatar = Column(String(50), comment='头像')
     validated = Column(Integer, comment='是否已经验证过邮箱')
 
@@ -49,11 +49,11 @@ class Diary(Base):
     __tablename__ = 'diary'
 
     id = Column(Integer, primary_key=True)
-    content = Column(Text(800))
+    content = Column(String(800))
     weather = Column(String(5), comment='天气')
     diary_type = Column(Integer, comment='日记类型 1新日记，2改写，3续写')
     parent_id = Column(Integer, ForeignKey("diary.id"))
-    like = Column(Integer, comment='点赞数')
+    like = Column(Integer, comment='点赞数', default=0)
     creator_id = Column(Integer, ForeignKey("users.id"))
     created_at = Column(DateTime, default=datetime.utcnow)
 

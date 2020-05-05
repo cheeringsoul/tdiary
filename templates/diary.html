@@ -13,7 +13,7 @@
         <h3><small>{{ date }}</small></h3>
       </div>
   </div>
-    <form action="{{ url_for('diary.create_diary') }}" method="post">
+    <form action="#" method="post">
         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
           <div class="col-md-4">
               <div style="text-align:center">
@@ -25,7 +25,7 @@
               </div>
 
           </div>
-          <textarea name="diary" maxlength="800" data-minheight="70" tabindex="1" id="isay-cont" rows="1" style="height: 100px; width: 100%;" required></textarea>
+          <textarea name="diary" maxlength="300" data-minheight="70" tabindex="1" id="isay-cont" rows="1" style="height: 100px; width: 100%;" required></textarea>
           <div style="float: right; padding-bottom: 10px">
         <button type="submit" class="btn btn-success">发表</button>
     </div>

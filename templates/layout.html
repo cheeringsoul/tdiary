@@ -19,7 +19,7 @@
       <ul class="nav navbar-nav navbar-right">
         <ul class="nav navbar-nav">
           <li>
-            <a class="glyphicon glyphicon-send" title="发表日记" aria-hidden="true" style="font-size:x-large;color:#2ea92e" href={{ url_for('diary.create_diary') }} > </a>
+            <a class="glyphicon glyphicon-send" title="发表日记" aria-hidden="true" style="font-size:x-large;color:#2ea92e" href={{ url_for('diary.create_diary', diary_type=1) }} > </a>
           </li>
       </ul>
         {% if session.get('current_user') %}
@@ -29,8 +29,7 @@
             <span class="caret"></span>
           </a>
           <ul class="dropdown-menu">
-            <li><a href="#">Action</a></li>
-            <li><a href="#">Another action</a></li>
+            <li><a href="#">个人资料</a></li>
             <li><a href="#">我的日记</a></li>
             <li role="separator" class="divider"></li>
             <li><a href={{ url_for('account.logout') }}>退出</a></li>
@@ -38,7 +37,7 @@
         </li>
         {% else %}
         <ul class="nav navbar-nav">
-        <li id="login"><a href={{ url_for('account.login') }}>登陆</a></li>
+        <li id="login"><a href={{ url_for('account.login') }}>登录</a></li>
           <li id="signup"><a href={{ url_for('account.signup') }}>注册</a></li>
           {% endif %}
       </ul>
@@ -51,13 +50,17 @@
 
   <body>
   <div class="container" style="width: 400px">
-      {% with messages = get_flashed_messages() %}
-  {% if messages %}
-
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
     {% for message in messages %}
+    {% if message.endswith('!') %}
     <div class="alert alert-danger" role="alert">
-        <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
-        {{ message }}
+      {% elif message.endswith('.') %}
+    <div class="alert alert-success" role="alert">
+      {% else %}
+      <div class="alert alert-info" role="alert">
+      {% endif %}
+      {{ message }}
 </div>
 {% endfor %}
 

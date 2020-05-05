@@ -1,6 +1,8 @@
 ﻿
 {% extends "layout.html" %}
 {% block content %}
+
+{% for item in diaries %}
     <div class="row" style="width:800px; margin:auto">
     <div class="media">
       <div class="media-left">
@@ -9,8 +11,12 @@
         </a>
       </div>
       <div class="media-body">
-        <h4 class="media-heading">Media heading</h4>
-        程序员程序员程序员程序员程序员程序员
+        <h5 class="media-heading" style="padding:10px">
+            <small style="font-size: initial;padding-left:50px">日记</small>
+            <small style="font-size: initial;padding-left:80px">{{ item.weather }}</small>
+            <small style="font-size: initial;padding-left:80px">{{ item.created_at|date }}</small>
+        </h5>
+        {{ item.content }}
       </div>
         <div class="btn-group " role="group" style="float:right; margin-top: 15px">
       <button type="button" class="btn btn-default">Left</button>
@@ -20,41 +26,17 @@
     </div>
 
     <hr style="margin-top: 6px;margin-bottom: 6px">
-<div class="media">
-      <div class="media-left">
-        <a href="#">
-          <img class="avatar media-object" src={{ url_for('static', filename='img/btc.png') }} alt="...">
-        </a>
-      </div>
-      <div class="media-body">
-        <h4 class="media-heading">Media heading</h4>
-        程序员程序员程序员程序员程序员程序员
-      </div>
-        <div class="btn-group " role="group" style="float:right; margin-top: 15px">
-      <button type="button" class="btn btn-default">Left</button>
-      <button type="button" class="btn btn-default">Middle</button>
-      <button type="button" class="btn btn-default">Right</button>
-    </div>
-    </div>
-        <hr style="margin-top: 6px;margin-bottom: 6px">
-<div class="media">
-      <div class="media-left">
-        <a href="#">
-          <img class="avatar media-object" src={{ url_for('static', filename='img/btc.png') }} alt="...">
-        </a>
-      </div>
-      <div class="media-body">
-        <h4 class="media-heading">Media heading</h4>
-        程序员程序员程序员程序员程序员程序员
-      </div>
-        <div class="btn-group " role="group" style="float:right; margin-top: 15px">
-      <button type="button" class="btn btn-default">Left</button>
-      <button type="button" class="btn btn-default">Middle</button>
-      <button type="button" class="btn btn-default">Right</button>
-    </div>
-    </div>
-</div>
-
+{% endfor %}
+<nav aria-label="...">
+  <ul class="pager">
+      {% if pre_page != -1 %}
+        <li><a href={{url_for('diary.diary', page_no=pre_page)}}>上一页</a></li>
+      {% endif %}
+      {% if next_page != -1 %}
+        <li><a href={{url_for('diary.diary', page_no=next_page)}}>下一页</a></li>
+      {% endif %}
+  </ul>
+</nav>
 {% endblock %}
 {% block script %}
 <script>
