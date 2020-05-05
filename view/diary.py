@@ -1,11 +1,11 @@
 from datetime import datetime
 from marshmallow import ValidationError
 from flask import (
-    Blueprint, flash, g, redirect, render_template, request, abort, url_for
+    Blueprint, flash, g, redirect, render_template, request, abort, url_for, current_app
 )
 
-from ext import csrf
 from common.validate import DiarySchema
+from ext import csrf
 from model import open_db_session, Diary, DiaryType
 
 
@@ -49,7 +49,8 @@ def create_diary():
     diary_type = request.args.get('diary_type', 1)
     diary_type = int(diary_type)
     if diary_type not in (DiaryType.NewDiary, DiaryType.RewriteDiary, DiaryType.ContinueDiary):
-        return "日记类型错误"
+        current_app.logger.error(f'wrong diary type {diary_type}')
+        return ""
     try:
         data = DiarySchema().load(request.form)
     except ValidationError as e:
@@ -70,8 +71,25 @@ def create_diary():
         with open_db_session() as db_session:
             db_session.add(d)
             db_session.commit()
-        return "ok"
+        flash("发表成功.")
+        return redirect(url_for('diary.create_diary', diary_type=diary_type))
 
+
+@bp.route('/like', methods=['post'])
+@csrf.exempt
+def like():
+    diary_id = request.form.get('id', None)
+    if diary_id is None:
+        current_app.logger.error('get empty diary id')
+        return ""
+    with open_db_session() as db_session:
+        rv = db_session.query(Diary).get(diary_id)
+        if not rv:
+            current_app.logger.error(f'diary id {diary_id} not exists')
+            return ""
+        rv.like = rv.like + 1
+        db_session.commit()
+    return "success."
 
 
 

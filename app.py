@@ -1,13 +1,31 @@
 from datetime import timedelta
+from logging.config import dictConfig
 from flask import Flask, render_template
 from werkzeug.utils import find_modules, import_string
-
 from common.context import load_current_user
 from ext import csrf
 
 
 def page_not_found(e):
     return render_template('404.html'), 404
+
+
+dictConfig({
+    'version': 1,
+    'formatters': {'default': {
+        'format': '[%(asctime)s] %(levelname)s in %(module)s: %(message)s',
+    }},
+    'handlers': {'tdiary': {
+        'class': 'logging.FileHandler',
+        'filename': 'tdiary-log.log',
+        'mode': 'w',
+        'formatter': 'default'
+    }},
+    'root': {
+        'level': 'INFO',
+        'handlers': ['tdiary']
+    }
+})
 
 
 class Application(Flask):

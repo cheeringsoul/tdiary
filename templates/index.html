@@ -1,9 +1,8 @@
 ﻿
 {% extends "layout.html" %}
 {% block content %}
-
+<div class="row" style="width:800px; margin:auto">
 {% for item in diaries %}
-    <div class="row" style="width:800px; margin:auto">
     <div class="media">
       <div class="media-left">
         <a href="#">
@@ -13,20 +12,22 @@
       <div class="media-body">
         <h5 class="media-heading" style="padding:10px">
             <small style="font-size: initial;padding-left:50px">日记</small>
-            <small style="font-size: initial;padding-left:80px">{{ item.weather }}</small>
             <small style="font-size: initial;padding-left:80px">{{ item.created_at|date }}</small>
+            <small style="font-size: initial;padding-left:80px">{{ item.weather }}</small>
         </h5>
         {{ item.content }}
       </div>
         <div class="btn-group " role="group" style="float:right; margin-top: 15px">
-      <button type="button" class="btn btn-default">Left</button>
-      <button type="button" class="btn btn-default">Middle</button>
-      <button type="button" class="btn btn-default">Right</button>
+      <button type="button" class="btn btn-default like" value="{{ item.id }}">
+          <span class="glyphicon glyphicon-thumbs-up" aria-hidden="true"></span>&nbsp&nbsp{{ item.like }}
+      </button>
+      <a target="_blank" href={{ url_for('diary.create_diary', diary_type=2) }} type="button" class="btn btn-default">改写</a>
+      <a target="_blank" href={{ url_for('diary.create_diary', diary_type=3) }} type="button" class="btn btn-default">续写</a>
+     </div>
     </div>
-    </div>
-
     <hr style="margin-top: 6px;margin-bottom: 6px">
-{% endfor %}
+    {% endfor %}
+    </div>
 <nav aria-label="...">
   <ul class="pager">
       {% if pre_page != -1 %}
@@ -41,5 +42,15 @@
 {% block script %}
 <script>
   $("#index").attr('class', 'active')
+  $(".like").click(function(){
+  $(this).children().css("color","red");
+    var value = $(this).attr('value')
+      $.ajax({
+          type: "POST",
+          url: "{{ url_for('diary.like')}}",
+          data: {'id':value},
+          dataType: 'json'
+      })
+  });
 </script>
 {% endblock %}
