@@ -61,5 +61,17 @@ class Diary(Base):
     creator = relationship("User", foreign_keys=[creator_id])
 
 
+class Like(Base):
+    __tablename__ = 'like'
+
+    id = Column(Integer, primary_key=True)
+    user_id = Column(Integer, ForeignKey("users.id"))
+    diary_id = Column(Integer, ForeignKey("diary.id"))
+    created_at = Column(DateTime, default=datetime.utcnow)
+
+    user = relationship("User", foreign_keys=[user_id])
+    diary = relationship("Diary", foreign_keys=[diary_id])
+
+
 if __name__ == '__main__':
     Base.metadata.create_all(engine)

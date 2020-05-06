@@ -1,12 +1,13 @@
 from datetime import datetime
 from marshmallow import ValidationError
 from flask import (
-    Blueprint, flash, g, redirect, render_template, request, abort, url_for, current_app
+    Blueprint, flash, g, redirect, render_template, request, abort,
+    url_for, current_app, session
 )
 
 from common.validate import DiarySchema
 from ext import csrf
-from model import open_db_session, Diary, DiaryType
+from model import open_db_session, Diary, DiaryType, Like
 
 
 bp = Blueprint('diary', __name__, url_prefix='/diary')
@@ -64,14 +65,17 @@ def create_diary():
         if g.current_user:
             d.creator_id = g.current_user['id']
         d.diary_type = diary_type
-        if d.diary_type == DiaryType.RewriteDiary:
-            """"""
-        elif d.diary_type == DiaryType.ContinueDiary:
-            """"""
-        with open_db_session() as db_session:
-            db_session.add(d)
-            db_session.commit()
-        flash("发表成功.")
+        try:
+            if d.diary_type in (DiaryType.RewriteDiary, DiaryType.ContinueDiary):
+                d.parent_id = request.args['diary_id']
+            with open_db_session() as db_session:
+                db_session.add(d)
+                db_session.commit()
+        except Exception as e:
+            current_app.logger.error(e)
+            flash("服务器异常!")
+        else:
+            flash("发表成功.")
         return redirect(url_for('diary.create_diary', diary_type=diary_type))
 
 
@@ -82,17 +86,35 @@ def like():
     if diary_id is None:
         current_app.logger.error('get empty diary id')
         return ""
-    if g.current_user is None:
-        """"""
+    if session.get('liked') == 1:
+        current_app.logger.warning('重复点赞')
+        return "已点赞"
     with open_db_session() as db_session:
         rv = db_session.query(Diary).get(diary_id)
         if not rv:
             current_app.logger.error(f'diary id {diary_id} not exists')
             return ""
-        rv.like = rv.like + 1
+        if not g.current_user:
+            # 未登陆用户在cookie中标记liked，防止重复点赞
+            session['liked'] = 1
+            rv.like = rv.like + 1
+        else:
+            user_id = g.current_user['id']
+            liked = db_session.query(Like).filter_by(user_id=user_id).filter_by(diary_id=diary_id).first()
+            if not liked:
+                li = Like()
+                li.user_id = g.current_user['id']
+                li.diary_id = diary_id
+                db_session.add(li)
+                rv.like = rv.like + 1
         db_session.commit()
     return "success."
 
 
-
-
+@bp.route('/my-diary')
+def get_diary():
+    default_page_size = 30
+    if not g.current_user:
+        flash("请先登录!")
+        return render_template("message.html")
+    # todo

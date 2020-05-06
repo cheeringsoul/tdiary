@@ -78,3 +78,9 @@ def signup():
 
         flash('注册成功，请登录.')
         return redirect(url_for('account.login'))
+
+
+@bp.route('/zone')
+def zone():
+    flash("待开发!")
+    return render_template('profile.html')
