@@ -15,6 +15,7 @@ bp = Blueprint('diary', __name__, url_prefix='/diary')
 
 @bp.route('/')
 def diary():
+    private = request.args.get('private')
     default_page_size = 3
     page_no = request.args.get('page_no', '0')
     if not page_no.isdigit():
@@ -25,8 +26,16 @@ def diary():
         # 恶意数据
         abort(404, description="Resource not found")
     with open_db_session() as db_session:
-        rv = db_session.query(Diary).order_by(Diary.created_at.desc())\
-            .limit(default_page_size).offset(page_no*default_page_size).all()
+        if private == 'True' and g.current_user:  # 某个用户的日记
+            user_id = g.current_user['id']
+            rv = db_session.query(Diary).filter_by(creator_id=user_id).order_by(Diary.created_at.desc())\
+                .limit(default_page_size).offset(page_no*default_page_size).all()
+            template = "my_diary.html"
+        else:
+            # 所有日记
+            rv = db_session.query(Diary).order_by(Diary.created_at.desc()) \
+                .limit(default_page_size).offset(page_no * default_page_size).all()
+            template = "index.html"
     if len(rv) == 0:
         flash("没有更多数据了!")
         return render_template('message.html', back=url_for('diary.diary'))
@@ -38,7 +47,7 @@ def diary():
         pre_page = -1
     else:
         pre_page = page_no - 1
-    return render_template('index.html', diaries=rv, next_page=next_page, pre_page=pre_page)
+    return render_template(template, diaries=rv, next_page=next_page, pre_page=pre_page)
 
 
 @bp.route('/create', methods=['get', 'post'])
@@ -109,12 +118,3 @@ def like():
                 rv.like = rv.like + 1
         db_session.commit()
     return "success."
-
-
-@bp.route('/my-diary')
-def get_diary():
-    default_page_size = 30
-    if not g.current_user:
-        flash("请先登录!")
-        return render_template("message.html")
-    # todo

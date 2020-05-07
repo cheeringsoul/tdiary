@@ -1,13 +1,10 @@
 from datetime import timedelta
 from logging.config import dictConfig
-from flask import Flask, render_template
+from flask import Flask, render_template, current_app, flash
 from werkzeug.utils import find_modules, import_string
 from common.context import load_current_user
+
 from ext import csrf
-
-
-def page_not_found(e):
-    return render_template('404.html'), 404
 
 
 dictConfig({
@@ -28,6 +25,16 @@ dictConfig({
 })
 
 
+def page_not_found(e):
+    return render_template('404.html'), 404
+
+
+def inter_error(e):
+    current_app.logger.error(e)
+    flash("服务器内部错误!!")
+    return render_template('message.html')
+
+
 class Application(Flask):
     def __init__(self, *args, **kwargs):
         super(Application, self).__init__(__name__, *args, **kwargs)
@@ -37,6 +44,7 @@ class Application(Flask):
         csrf.init_app(self)
         self.before_request(load_current_user)
         self.register_error_handler(404, page_not_found)
+        self.register_error_handler(500, inter_error)
 
     def register_blueprints(self, root):
         for name in find_modules(root, recursive=True):
