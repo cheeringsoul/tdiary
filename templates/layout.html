@@ -29,8 +29,7 @@
             <span class="caret"></span>
           </a>
           <ul class="dropdown-menu">
-            <li><a href={{ url_for('account.zone') }}>个人资料</a></li>
-            <li><a href={{ url_for('diary.diary', private=true) }}>我的日记</a></li>
+            <li><a href={{ url_for('account.zone', user_id=g.current_user['id']) }}>个人中心</a></li>
             <li role="separator" class="divider"></li>
             <li><a href={{ url_for('account.logout') }}>退出</a></li>
           </ul>

@@ -1,6 +1,6 @@
 from marshmallow import ValidationError
 from flask import (
-    Blueprint, flash, redirect, render_template, request, session, url_for
+    Blueprint, flash, redirect, render_template, request, session, url_for, abort, g
 )
 from werkzeug.security import check_password_hash, generate_password_hash
 from sqlalchemy import or_
@@ -8,7 +8,7 @@ from sqlalchemy import or_
 from common.validate import RegisterSchema
 from common.context import save_current_user
 from ext import csrf
-from model import User, Validated, open_db_session
+from model import User, Diary, Validated, open_db_session
 
 
 bp = Blueprint('account', __name__, url_prefix='/account')
@@ -82,5 +82,42 @@ def signup():
 
 @bp.route('/zone')
 def zone():
-    flash("待开发!")
-    return render_template('profile.html')
+    default_page_size = 3
+    user_id = request.args.get('user_id', '')
+    user_id = user_id.strip()
+    page_no = request.args.get('page_no', '0')
+    if not page_no.isdigit():
+        # 恶意数据
+        abort(404, description="Resource not found")
+    page_no = int(page_no)
+    if page_no < 0:
+        # 恶意数据
+        abort(404, description="Resource not found")
+    with open_db_session() as db_session:
+        user = db_session.query(User).get(user_id)
+        if not user:
+            abort(404, description="Resource not found")
+
+        rv = db_session.query(Diary).order_by(Diary.created_at.desc()) \
+            .limit(default_page_size).offset(page_no * default_page_size).all()
+    if len(rv) == 0:
+
+        flash("没有更多数据了!")
+
+    if len(rv) < default_page_size:
+        next_page = -1
+    else:
+        next_page = page_no + 1
+    if page_no == 0:
+        pre_page = -1
+    else:
+        pre_page = page_no - 1
+
+    if g.current_user and int(user_id) == g.current_user['id']:
+        # 当前登录用户查看自己个人空间
+        private = 1
+    else:
+        # 访问他人空间
+        private = 0
+    return render_template('my_diary.html', diaries=rv, next_page=next_page, pre_page=pre_page,
+                           avatar=user.avatar, user_id=user_id, private=private)
