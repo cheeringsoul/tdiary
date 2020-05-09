@@ -7,6 +7,7 @@ from sqlalchemy import or_
 
 from common.validate import RegisterSchema
 from common.context import save_current_user
+from common.filestorage import ImageFileStorage
 from ext import csrf
 from model import User, Diary, Validated, open_db_session
 
@@ -121,3 +122,15 @@ def zone():
         private = 0
     return render_template('my_diary.html', diaries=rv, next_page=next_page, pre_page=pre_page,
                            avatar=user.avatar, user_id=user_id, private=private)
+
+
+@bp.route('/upload', methods=['POST'])
+def upload():
+    files = request.files
+    image_uri = []
+    for f in files:
+        image = ImageFileStorage(files[f])
+        if not image.check_image_type():
+            flash("图片格式不对")
+        image_uri.append(image.save())
+    return 'ok'
