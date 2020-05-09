@@ -1,0 +1,41 @@
+version: '3.7'
+services:
+  webapp:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      - TICKET_DB_USER=root
+      - TICKET_DB_PASSWORD=server
+      - TICKET_DB_HOST=192.168.83.3
+      - TICKET_DB_PORT=3306
+      - TICKET_DB_NAME=ticket
+      - WALLET_DB_USER=root
+      - WALLET_DB_PASSWORD=server
+      - WALLET_DB_HOST=192.168.83.3
+      - WALLET_DB_PORT=3306
+      - WALLET_DB_NAME=wallet
+      - SECRET_KEY=wer134sd
+    volumes:
+      - type: volume
+        source: images_data
+        target: /app/files
+        volume:
+          nocopy: true
+    command: ["gunicorn", "--workers=4", "-b", "0.0.0.0:8888", "app:application"]
+
+  nginx:
+    image:
+      nginx:alpine
+    ports:
+      - "80:80"
+    volumes:
+      - type: volume
+        source: images_data
+        target: /images_data
+      - ./nginx:/etc/nginx/conf.d
+    links:
+      - webapp
+
+volumes:
+  images_data:

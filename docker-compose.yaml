@@ -1,0 +1,39 @@
+version: '3.7'
+services:
+  webapp:
+    image: 502679998445.dkr.ecr.ap-northeast-1.amazonaws.com/code:ticket-bed5d247
+    environment:
+      - TICKET_DB_USER=ticket
+      - TICKET_DB_PASSWORD=ticket2134532860
+      - TICKET_DB_HOST=192.168.102.71
+      - TICKET_DB_PORT=3306
+      - TICKET_DB_NAME=ticket
+      - WALLET_DB_USER=test_ybt_wallet
+      - WALLET_DB_PASSWORD=teStYbtWallet123
+      - WALLET_DB_HOST=192.168.102.71
+      - WALLET_DB_PORT=3306
+      - WALLET_DB_NAME=test_ybt_wallet
+      - SECRET_KEY=wer134sd
+    volumes:
+      - type: volume
+        source: images_data
+        target: /app/files
+        volume:
+          nocopy: true
+    command: ["gunicorn", "--workers=4", "-b", "0.0.0.0:8888", "app:application"]
+
+  nginx:
+    image:
+      nginx:alpine
+    ports:
+      - "80:80"
+    volumes:
+      - type: volume
+        source: images_data
+        target: /images_data
+      - ./nginx:/etc/nginx/conf.d
+    links:
+      - webapp
+
+volumes:
+  images_data:
