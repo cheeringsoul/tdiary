@@ -7,7 +7,7 @@
           <img class="img-circle" style="width: 18rem;height;18rem" src={{ avatar }}>
           <div class="card-body">
               {% if private==1 %}
-              <a href="#" onclick="alert('正在开发中..敬请期待.')" class="btn btn-primary">修改资料</a>
+              <a href={{ url_for('account.update_profile') }}  class="btn btn-primary">修改资料</a>
               {% else %}
               <h5 class="card-title"></h5>
               {% endif %}
@@ -17,9 +17,7 @@
 <div class="col-md-6">
       {% for item in diaries %}
       <div style="width:800px;margin: auto;">
-
         <div class="media">
-
           <div class="media-body">
             <h5 class="media-heading" style="padding:10px">
             <small style="font-size: initial;padding-left:50px">日记</small>
@@ -43,7 +41,6 @@
     <div class="col-md-3"></div>
   </div>
 <div>
-
 </div>
 <nav aria-label="...">
   <ul class="pager">
