@@ -11,7 +11,7 @@ dictConfig({
     'handlers': {'tdiary': {
         'class': "logging.handlers.RotatingFileHandler",
         'filename': 'tdiary.log',
-        'maxBytes': 1023*3,
+        'maxBytes': 1024*1024*3,
         'backupCount': 5,
         'mode': 'w',
         'formatter': 'default'

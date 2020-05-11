@@ -1,5 +1,5 @@
 .idea
 tdiary.db
 __pycache__/*
-tdiary-log.log
+*.log
 *.pyc
