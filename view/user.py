@@ -6,7 +6,7 @@ from werkzeug.security import check_password_hash, generate_password_hash
 from sqlalchemy import or_
 
 from common.context import save_current_user
-from common.filestorage import ImageFileStorage
+from common.filestorage import ImageBase64Storage
 from common.validate import RegisterSchema, UpdatePasswordSchema
 from ext import csrf
 from model import User, Diary, Validated, open_db_session
@@ -126,13 +126,15 @@ def zone():
 
 @bp.route('/upload', methods=['POST'])
 def upload():
-    files = request.files
-    image_uri = []
-    for f in files:
-        image = ImageFileStorage(files[f])
-        if not image.check_image_type():
-            flash("图片格式不对")
-        image_uri.append(image.save())
+    image_base64 = request.form.get('avatar')
+    if not image_base64:
+        return "图片不能为空"
+
+    image = ImageBase64Storage(image_base64)
+    if not image.check_image_type():
+        flash("图片格式不对")
+        return render_template('')  # todo
+    image_uri = image.save()
     return 'ok'
 
 

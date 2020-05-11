@@ -62,7 +62,7 @@ class ImageBase64Storage(object):
             # self._image_type = imghdr.what(image)
         return self._image_type
 
-    def _check(self):
+    def check_image_type(self):
         allowed = current_app.config['ALLOW_IMAGE_TYPE']
         return self.image_type in allowed
 

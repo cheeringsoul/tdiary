@@ -1,28 +1,10 @@
-from datetime import timedelta
-from logging.config import dictConfig
+import os
 from flask import Flask, render_template, current_app, flash
 from werkzeug.utils import find_modules, import_string
 from common.context import load_current_user
 
 from ext import csrf
-
-
-dictConfig({
-    'version': 1,
-    'formatters': {'default': {
-        'format': '[%(asctime)s] %(levelname)s in %(module)s: %(message)s',
-    }},
-    'handlers': {'tdiary': {
-        'class': 'logging.FileHandler',
-        'filename': 'tdiary-log.log',
-        'mode': 'w',
-        'formatter': 'default'
-    }},
-    'root': {
-        'level': 'INFO',
-        'handlers': ['tdiary']
-    }
-})
+# from config import FlaskAppDevelopmentConfig, FlaskAppProductionConfig
 
 
 def page_not_found(e):
@@ -39,12 +21,17 @@ class Application(Flask):
     def __init__(self, *args, **kwargs):
         super(Application, self).__init__(__name__, *args, **kwargs)
         self.url_map.strict_slashes = False
-        self.secret_key = b'_5C+=^==#y2L"FD4Q8z\n\xec]/'
-        self.permanent_session_lifetime = timedelta(days=7)
         csrf.init_app(self)
         self.before_request(load_current_user)
         self.register_error_handler(404, page_not_found)
         self.register_error_handler(500, inter_error)
+
+    def _config(self):
+        debug = os.environ.get('DEBUG', False)
+        if debug:
+            self.config.from_object(FlaskAppDevelopmentConfig)
+        else:
+            self.config.from_object(FlaskAppProductionConfig)
 
     def register_blueprints(self, root):
         for name in find_modules(root, recursive=True):

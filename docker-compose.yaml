@@ -8,13 +8,16 @@ services:
       - DB_HOST=192.168.77.31
       - DB_PORT=3306
       - DB_NAME=diary
-      - SECRET_KEY=wer134sd
+      - SECRET_KEY=dksS7^Q1~)%(;m
     volumes:
       - type: volume
         source: images_data
         target: /app/files
         volume:
           nocopy: true
+      - type: bind
+        source: .
+        target: /app/diary
     command: ["gunicorn", "--workers=4", "-b", "0.0.0.0:8888", "--reload", "app:application"]
 
   nginx:
