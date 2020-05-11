@@ -17,9 +17,17 @@ services:
         target: /app/files
         volume:
           nocopy: true
+
+      - type: volume
+        source: static_data
+        target: /app/files/static
+        volume:
+          nocopy: true
+
       - type: bind
         source: .
         target: /app/diary
+
     command: ["gunicorn", "--workers=4", "-b", "0.0.0.0:8888", "--reload", "app:application"]
 
   nginx:
@@ -31,9 +39,14 @@ services:
       - type: volume
         source: images_data
         target: /images_data
+
+      - type: volume
+        source: static_data
+        target: /static_data
       - ./nginx:/etc/nginx/conf.d
     links:
       - webapp
 
 volumes:
   images_data:
+  static_data:
