@@ -4,7 +4,7 @@ from werkzeug.utils import find_modules, import_string
 from common.context import load_current_user
 
 from ext import csrf
-# from config import FlaskAppDevelopmentConfig, FlaskAppProductionConfig
+from config import FlaskAppDevelopmentConfig, FlaskAppProductionConfig
 
 
 def page_not_found(e):
