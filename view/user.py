@@ -141,7 +141,7 @@ def update_password():
     if request.method == 'GET':
         if not g.current_user:
             flash('请先登陆!')
-        return render_template('profile.html')
+        return render_template('password.html')
     if not g.current_user:
         return '请先登录'
     try:
@@ -149,12 +149,32 @@ def update_password():
     except ValidationError as e:
         for _, value in e.messages.items():
             flash(value[0])
-            return render_template('profile.html')
+            return render_template('password.html')
     else:
         with open_db_session() as db_session:
             user = db_session.query(User).get(g.current_user['id'])
             if not check_password_hash(data['old_password'], user.password):
                 flash('密码不正确')
-                return render_template('profile.html')
+                return render_template('password.html')
             user.password = generate_password_hash(data['new_password'])
             db_session.commit()
+
+
+@bp.route('/update-profile', methods=['GET', 'POST'])
+def update_username():
+    if request.method == 'GET':
+        if not g.current_user:
+            flash('请先登录!')
+        return render_template('profile.html')  # todo
+    if not g.current_user:
+        return "请先登录!"
+    new_name = request.form.get('new_name', '').strip()
+    if not new_name:
+        flash("用户名不能为空!")
+        return render_template('profile.html')
+    with open_db_session() as db_session:
+        user = db_session.query(User).get(g.current_user['id'])
+        user.name = new_name
+        db_session.commit()
+    flash("修改成功.")
+    return render_template('message.html')
