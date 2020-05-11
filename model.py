@@ -5,9 +5,11 @@ from sqlalchemy.orm import relationship, sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Column, Integer, String, DateTime, ForeignKey
 
+from config import db_uri
+
 
 Base = declarative_base()
-engine = create_engine('mysql+pymysql://root:server@192.168.77.31/diary')
+engine = create_engine(db_uri)
 Session = sessionmaker(bind=engine)
 
 

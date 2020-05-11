@@ -74,8 +74,8 @@ class MySQLConfig(object):
         self.db_name = os.environ['DB_NAME']
 
     @property
-    def ticket_db_uri(self):
+    def db_uri(self):
         return f"mysql+pymysql://{self.db_user}:{self.db_password}@{self.db_host}:{self.db_port}/{self.db_name}?charset=utf8mb4&binary_prefix=true"
 
 
-db_uri = MySQLConfig().ticket_db_uri
+db_uri = MySQLConfig().db_uri
