@@ -30,6 +30,29 @@ class DiarySchema(SchemaSplit):
             raise ValidationError("length of weather should less than 5 char.")
 
 
+def validate_password(value):
+    digital = 0
+    lower = 0
+    upper = 0
+    special_char = 0
+    special_char_set = """
+    '!@#$%^&*()-_=+[{]};:",<.>/?
+    """
+    if len(value) > 16 or len(value) < 6:
+        raise ValidationError('密码长度必须在6到16之前')
+    for s in value:
+        if s.isdigit():
+            digital = 1
+        elif s.islower():
+            lower = 1
+        elif s.isupper():
+            upper = 1
+        elif s in special_char_set:
+            special_char = 1
+    if sum([digital, lower, upper, special_char]) < 2:
+        raise ValidationError('密码必须包含数字、大写字母、小写字母、特殊字符至少两种')
+
+
 class RegisterSchema(SchemaSplit):
     username = fields.Str(required=True)
     email = fields.Email(required=True)
@@ -43,25 +66,28 @@ class RegisterSchema(SchemaSplit):
 
     @validates('password')
     def validate_password(self, value):
-        digital = 0
-        lower = 0
-        upper = 0
-        special_char = 0
-        special_char_set = """
-        '!@#$%^&*()-_=+[{]};:",<.>/?
-        """
-        if len(value) > 16 or len(value) < 6:
-            raise ValidationError('密码长度必须在6到16之前')
-        for s in value:
-            if s.isdigit():
-                digital = 1
-            elif s.islower():
-                lower = 1
-            elif s.isupper():
-                upper = 1
-            elif s in special_char_set:
-                special_char = 1
-        if sum([digital, lower, upper, special_char]) < 2:
-            raise ValidationError('密码必须包含数字、大写字母、小写字母、特殊字符至少两种')
+        validate_password(value)
 
 
+class UpdatePasswordSchema(SchemaSplit):
+    old_password = fields.Str(required=True)
+    new_password = fields.Str(required=True)
+    repeated_password = fields.Str(required=True)
+
+    @validates('old_password')
+    def validate_password(self, value):
+        validate_password(value)
+
+    @validates('new_password')
+    def validate_password(self, value):
+        validate_password(value)
+
+    @validates('repeated_password')
+    def validate_password(self, value):
+        validate_password(value)
+
+    @pre_load
+    def check_password(self, data, **kwargs):
+        if data['new_password'] != data['repeated_password']:
+            raise ValidationError('两次密码不一致!')
+        return data

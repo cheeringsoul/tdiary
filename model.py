@@ -7,7 +7,7 @@ from sqlalchemy import Column, Integer, String, Text, DateTime, ForeignKey
 
 
 Base = declarative_base()
-engine = create_engine('mysql+pymysql://root:12345678@localhost/diary')
+engine = create_engine('mysql+pymysql://root:server@192.168.77.31/diary')
 Session = sessionmaker(bind=engine)
 
 

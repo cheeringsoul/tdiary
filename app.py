@@ -39,7 +39,7 @@ class Application(Flask):
     def __init__(self, *args, **kwargs):
         super(Application, self).__init__(__name__, *args, **kwargs)
         self.url_map.strict_slashes = False
-        self.secret_key = b'_5#y2L"F4Q8z\n\xec]/'
+        self.secret_key = b'_5C+=^==#y2L"FD4Q8z\n\xec]/'
         self.permanent_session_lifetime = timedelta(days=7)
         csrf.init_app(self)
         self.before_request(load_current_user)

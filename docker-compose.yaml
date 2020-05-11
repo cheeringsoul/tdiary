@@ -1,18 +1,13 @@
 version: '3.7'
 services:
   webapp:
-    image: 502679998445.dkr.ecr.ap-northeast-1.amazonaws.com/code:ticket-bed5d247
+    image: python:3.7-alpine
     environment:
-      - TICKET_DB_USER=ticket
-      - TICKET_DB_PASSWORD=ticket2134532860
-      - TICKET_DB_HOST=192.168.102.71
-      - TICKET_DB_PORT=3306
-      - TICKET_DB_NAME=ticket
-      - WALLET_DB_USER=test_ybt_wallet
-      - WALLET_DB_PASSWORD=teStYbtWallet123
-      - WALLET_DB_HOST=192.168.102.71
-      - WALLET_DB_PORT=3306
-      - WALLET_DB_NAME=test_ybt_wallet
+      - DB_USER=root
+      - DB_PASSWORD=server
+      - DB_HOST=192.168.77.31
+      - DB_PORT=3306
+      - DB_NAME=diary
       - SECRET_KEY=wer134sd
     volumes:
       - type: volume
@@ -20,7 +15,7 @@ services:
         target: /app/files
         volume:
           nocopy: true
-    command: ["gunicorn", "--workers=4", "-b", "0.0.0.0:8888", "app:application"]
+    command: ["gunicorn", "--workers=4", "-b", "0.0.0.0:8888", "--reload", "app:application"]
 
   nginx:
     image:

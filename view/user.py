@@ -5,9 +5,9 @@ from flask import (
 from werkzeug.security import check_password_hash, generate_password_hash
 from sqlalchemy import or_
 
-from common.validate import RegisterSchema
 from common.context import save_current_user
 from common.filestorage import ImageFileStorage
+from common.validate import RegisterSchema, UpdatePasswordSchema
 from ext import csrf
 from model import User, Diary, Validated, open_db_session
 
@@ -136,9 +136,25 @@ def upload():
     return 'ok'
 
 
-@bp.route('/update-profile', methods=['POST', 'GET'])
-def update_profile():
+@bp.route('/update-password', methods=['POST', 'GET'])
+def update_password():
+    if request.method == 'GET':
+        if not g.current_user:
+            flash('请先登陆!')
+        return render_template('profile.html')
     if not g.current_user:
-        flash('请先登陆!')
-        return render_template('message.html')
-    return render_template('profile.html')
+        return '请先登录'
+    try:
+        data = UpdatePasswordSchema().load(request.form)
+    except ValidationError as e:
+        for _, value in e.messages.items():
+            flash(value[0])
+            return render_template('profile.html')
+    else:
+        with open_db_session() as db_session:
+            user = db_session.query(User).get(g.current_user['id'])
+            if not check_password_hash(data['old_password'], user.password):
+                flash('密码不正确')
+                return render_template('profile.html')
+            user.password = generate_password_hash(data['new_password'])
+            db_session.commit()
