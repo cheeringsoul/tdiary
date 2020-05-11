@@ -73,7 +73,7 @@ def signup():
             user.email = data['email']
             user.validated = Validated.No
             user.password = generate_password_hash(data['password'])
-            user.avatar = '/default_avatar.jpg'  # todo
+            user.avatar = 'default_avatar.jpg'
             db_session.add(user)
             db_session.commit()
 
@@ -134,3 +134,11 @@ def upload():
             flash("图片格式不对")
         image_uri.append(image.save())
     return 'ok'
+
+
+@bp.route('/update-profile', methods=['POST', 'GET'])
+def update_profile():
+    if not g.current_user:
+        flash('请先登陆!')
+        return render_template('message.html')
+    return render_template('profile.html')
