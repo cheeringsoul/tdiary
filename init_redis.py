@@ -4,7 +4,7 @@ from model import open_db_session, User
 
 
 def init():
-    r = redis.Redis(host='localhost', port=6379, db=0)
+    r = redis.Redis(host='redis', port=6379, db=0)
     pipe = r.pipeline()
 
     with open_db_session() as session:
