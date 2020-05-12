@@ -25,6 +25,7 @@ class Application(Flask):
         self.before_request(load_current_user)
         self.register_error_handler(404, page_not_found)
         self.register_error_handler(500, inter_error)
+        self._config()
 
     def _config(self):
         debug = os.environ.get('DEBUG', False)
