@@ -12,7 +12,7 @@ services:
       - DB_NAME=diary
       - SECRET_KEY=dksS7^Q1~)%(;m
     volumes:
-      - /home/ymy/data/diary_image:/app/files
+      - /Users/ymy/work/diary_image:/app/files
       - .:/app/diary
     command: ["gunicorn", "--workers=4", "-b", "0.0.0.0:8888", "--reload", "app:application"]
 
@@ -22,7 +22,7 @@ services:
     ports:
       - "80:80"
     volumes:
-      - /home/ymy/data/diary_image:/images_data
+      - /Users/ymy/work/diary_image:/images_data
       - ./nginx:/etc/nginx/conf.d
       - ./static:/static_files
     links:

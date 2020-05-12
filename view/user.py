@@ -125,6 +125,7 @@ def zone():
 
 
 @bp.route('/upload', methods=['POST'])
+@csrf.exempt
 def upload():
     image_base64 = request.form.get('avatar')
     if not image_base64:
@@ -135,7 +136,7 @@ def upload():
         flash("图片格式不对")
         return render_template('')  # todo
     image_uri = image.save()
-    return 'ok'
+    return image_uri
 
 
 @bp.route('/update-password', methods=['POST', 'GET'])

@@ -58,7 +58,7 @@ class ImageBase64Storage(object):
     def image_type(self):
         if not self._image_type:
             image = io.BytesIO(self.b64_data)
-            self._image_type = whatimage.identify_image(image)
+            self._image_type = whatimage.identify_image(image.read())
             # self._image_type = imghdr.what(image)
         return self._image_type
 
