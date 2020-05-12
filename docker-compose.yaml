@@ -6,15 +6,20 @@ services:
       dockerfile: Dockerfile
     environment:
       - DB_USER=root
-      - DB_PASSWORD=server
-      - DB_HOST=192.168.77.31
+      - DB_PASSWORD=12345678
+      - DB_HOST=192.168.8.3
       - DB_PORT=3306
       - DB_NAME=diary
       - SECRET_KEY=dksS7^Q1~)%(;m
     volumes:
-      - /Users/ymy/work/diary_image:/app/files
+      - /Users/icheer/work/diary_image:/app/files
       - .:/app/diary
-    command: ["gunicorn", "--workers=4", "-b", "0.0.0.0:8888", "--reload", "app:application"]
+    links:
+      - redis
+    command: ["gunicorn", "-c","gunicorn_config.py", "--workers=4", "-b", "0.0.0.0:8888", "--reload", "app:application"]
+
+  redis:
+    image: redis:6.0.1-alpine
 
   nginx:
     image:
@@ -22,7 +27,7 @@ services:
     ports:
       - "80:80"
     volumes:
-      - /Users/ymy/work/diary_image:/images_data
+      - /Users/icheer/work/diary_image:/images_data
       - ./nginx:/etc/nginx/conf.d
       - ./static:/static_files
     links:
