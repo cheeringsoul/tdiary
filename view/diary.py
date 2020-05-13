@@ -7,7 +7,7 @@ from flask import (
 
 from common.validate import DiarySchema
 from ext import csrf
-from model import open_db_session, Diary, DiaryType, Like
+from model import open_db_session, Diary, DiaryType, Like, User
 
 
 bp = Blueprint('diary', __name__, url_prefix='/diary')
@@ -25,8 +25,10 @@ def diary():
         # 恶意数据
         abort(404, description="Resource not found")
     with open_db_session() as db_session:
-        rv = db_session.query(Diary).order_by(Diary.created_at.desc()) \
+        rv = db_session.query(Diary).join(User, Diary.creator_id == User.id, isouter=True)\
+            .order_by(Diary.created_at.desc()) \
             .limit(default_page_size).offset(page_no * default_page_size).all()
+        
     if len(rv) == 0:
         flash("没有更多数据了!")
         return render_template('message.html', back=url_for('diary.diary'))
