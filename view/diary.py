@@ -11,10 +11,11 @@ from model import open_db_session, Diary, DiaryType, Like, User
 
 
 bp = Blueprint('diary', __name__, url_prefix='/diary')
+default_img = 'noimage.png'
 
 
 @bp.route('/')
-def diary():
+def get_diary():
     default_page_size = 3
     page_no = request.args.get('page_no', '0')
     if not page_no.isdigit():
@@ -31,11 +32,21 @@ def diary():
             .limit(default_page_size).offset(page_no * default_page_size).all()
         for each in rv:
             diary, user = each
-
-
+            if diary:
+                current_app.logger.info(diary.created_at)
+                result.append({
+                    'created_at': diary.created_at,
+                    'weather': diary.weather,
+                    'content': diary.content,
+                    'diary_id': diary.id,
+                    'like': diary.like,
+                    'username': user.name if user else "匿名用户",
+                    "user_id": user.id if user else "",
+                    'avatar': user.avatar if user else default_img
+                })
     if len(rv) == 0:
         flash("没有更多数据了!")
-        return render_template('message.html', back=url_for('diary.diary'))
+        return render_template('message.html', back=url_for('diary.get_diary'))
     if len(rv) < default_page_size:
         next_page = -1
     else:
@@ -44,7 +55,7 @@ def diary():
         pre_page = -1
     else:
         pre_page = page_no - 1
-    return render_template("index.html", diaries=rv, next_page=next_page, pre_page=pre_page)
+    return render_template("index.html", diaries=result, next_page=next_page, pre_page=pre_page)
 
 
 @bp.route('/create', methods=['get', 'post'])
@@ -55,7 +66,7 @@ def create_diary():
         return render_template('diary.html', date=date)
     diary_type = request.args.get('diary_type', 1)
     diary_type = int(diary_type)
-    if diary_type not in (DiaryType.NewDiary, DiaryType.RewriteDiary, DiaryType.ContinueDiary):
+    if diary_type not in (DiaryType.NewDiary, DiaryType.ContinueDiary):
         current_app.logger.error(f'wrong diary type {diary_type}')
         return ""
     try:
@@ -71,9 +82,9 @@ def create_diary():
         if g.current_user:
             d.creator_id = g.current_user['id']
         d.diary_type = diary_type
+        if d.diary_type == DiaryType.ContinueDiary:
+            d.parent_id = request.args['diary_id']
         try:
-            if d.diary_type in (DiaryType.RewriteDiary, DiaryType.ContinueDiary):
-                d.parent_id = request.args['diary_id']
             with open_db_session() as db_session:
                 db_session.add(d)
                 db_session.commit()

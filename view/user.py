@@ -34,14 +34,14 @@ def login():
             flash('密码不正确')
             return render_template('login.html')
     save_current_user({'id': rv.id, 'name': rv.name})
-    return redirect(url_for('diary.diary'))
+    return redirect(url_for('diary.get_diary'))
 
 
 @bp.route('/logout')
 def logout():
     if session.get('current_user'):
         session.pop('current_user')
-    return redirect(url_for('diary.diary'))
+    return redirect(url_for('diary.get_diary'))
 
 
 @bp.route('/signup', methods=['get', 'post'])

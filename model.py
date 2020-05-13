@@ -7,7 +7,7 @@ from sqlalchemy import Column, Integer, String, DateTime, ForeignKey
 
 from config import db_uri
 
-
+# db_uri = "mysql+pymysql://root:server@localhost:3306/diary?charset=utf8mb4&binary_prefix=true"
 Base = declarative_base()
 engine = create_engine(db_uri)
 Session = sessionmaker(bind=engine)
@@ -43,8 +43,7 @@ class User(Base):
 
 class DiaryType(object):
     NewDiary = 1
-    RewriteDiary = 2
-    ContinueDiary = 3
+    ContinueDiary = 2
 
 
 class Diary(Base):
@@ -53,7 +52,7 @@ class Diary(Base):
     id = Column(Integer, primary_key=True)
     content = Column(String(800))
     weather = Column(String(5), comment='天气')
-    diary_type = Column(Integer, comment='日记类型 1新日记，2改写，3续写')
+    diary_type = Column(Integer, comment='日记类型 1新日记，2续写')
     parent_id = Column(Integer, ForeignKey("diary.id"))
     like = Column(Integer, comment='点赞数', default=0)
     creator_id = Column(Integer, ForeignKey("users.id"))
