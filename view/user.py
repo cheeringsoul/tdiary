@@ -73,7 +73,7 @@ def signup():
             user.email = data['email']
             user.validated = Validated.No
             user.password = generate_password_hash(data['password'])
-            user.avatar = 'default_avatar.jpg'
+            user.avatar = 'noimage.png'
             db_session.add(user)
             db_session.commit()
 

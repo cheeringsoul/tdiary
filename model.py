@@ -62,6 +62,9 @@ class Diary(Base):
     parent_diary = relationship("Diary", foreign_keys=[parent_id])
     creator = relationship("User", foreign_keys=[creator_id])
 
+    def __repr__(self):
+        return "<Diary(id='%s')>" % self.id
+
 
 class Like(Base):
     __tablename__ = 'like'

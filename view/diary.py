@@ -24,11 +24,15 @@ def diary():
     if page_no < 0:
         # 恶意数据
         abort(404, description="Resource not found")
+    result = []
     with open_db_session() as db_session:
-        rv = db_session.query(Diary).join(User, Diary.creator_id == User.id, isouter=True)\
+        rv = db_session.query(Diary, User).join(User, Diary.creator_id == User.id, isouter=True)\
             .order_by(Diary.created_at.desc()) \
             .limit(default_page_size).offset(page_no * default_page_size).all()
-        
+        for each in rv:
+            diary, user = each
+
+
     if len(rv) == 0:
         flash("没有更多数据了!")
         return render_template('message.html', back=url_for('diary.diary'))
