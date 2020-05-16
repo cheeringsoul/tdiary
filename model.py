@@ -7,9 +7,8 @@ from sqlalchemy import Column, Integer, String, DateTime, ForeignKey
 
 from config import db_uri
 
-# db_uri = "mysql+pymysql://root:server@localhost:3306/diary?charset=utf8mb4&binary_prefix=true"
 Base = declarative_base()
-engine = create_engine(db_uri)
+engine = create_engine(db_uri, pool_size=2, max_overflow=0)
 Session = sessionmaker(bind=engine)
 
 

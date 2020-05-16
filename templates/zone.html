@@ -1,0 +1,71 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="row" >
+    <div class="col-md-3">
+        <div class="" style="float:right">
+          <img class="img-circle" style="width:150px;height:150px" src="{{ '/images/_data/'+avatar }}">
+          <div style="padding: 15px;text-align: center;">
+              {% if private==1 %}
+              <a href={{ url_for('account.update_profile') }}  class="btn btn-success">修改资料</a>
+              {% else %}
+              <h5 class="card-title">{{ username }}</h5>
+              {% endif %}
+          </div>
+        </div>
+    </div>
+<div class="col-md-6">
+      {% for item in diaries %}
+      <div style="width:800px;margin: auto;">
+        <div class="media">
+      <div class="media-left" style="text-align: center;">
+          <img class="avatar media-object img-circle" src="{{ '/images/_data/'+avatar }}" alt="...">
+      </div>
+      <div class="media-body">
+          <h5 style="margin-top:0px; margin-bottom:0px"><small>{{ username }}</small></h5>
+        <h5 class="media-heading" style="padding-bottom:25px">
+            <small style="font-size: initial;padding-left:80px;float:right">{{ item['weather'] }}</small>
+            <small style="font-size: initial;float:right">{{ item['created_at']|date }}</small>
+        </h5>
+          <p>{{ item['content'] }}</p>
+      </div>
+        <div class="btn-group " role="group" style="float:right; margin-top: 15px">
+      <button type="button" class="btn btn-default like" value="{{ item['id'] }}">
+          <span class="glyphicon glyphicon-thumbs-up" aria-hidden="true"></span>&nbsp&nbsp{{ item['like'] }}
+      </button>
+      <a target="_blank" href={{ url_for('diary.create_diary', diary_type=2, diary_id=item['id']) }} type="button" class="btn btn-default">续写</a>
+     </div>
+    </div>
+    <hr style="margin-top: 6px;margin-bottom: 6px">
+    {% endfor %}
+      </div>
+      </div>
+    <div class="col-md-3"></div>
+  </div>
+<div>
+</div>
+<nav aria-label="...">
+  <ul class="pager">
+      {% if pre_page != -1 %}
+        <li><a href={{url_for('account.zone', page_no=pre_page, user_id=user_id)}}>上一页</a></li>
+      {% endif %}
+      {% if next_page != -1 %}
+        <li><a href={{url_for('account.zone', page_no=next_page, user_id=user_id)}}>下一页</a></li>
+      {% endif %}
+  </ul>
+</nav>
+{% endblock %}
+{% block script %}
+<script>
+  $(".like").click(function(){
+  $(this).children().css("color","red");
+    var value = $(this).attr('value')
+      $.ajax({
+          type: "POST",
+          url: "{{ url_for('diary.like')}}",
+          data: {'id':value},
+          dataType: 'json'
+      })
+  });
+</script>
+{% endblock %}

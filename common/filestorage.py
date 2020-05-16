@@ -71,12 +71,12 @@ class ImageBase64Storage(object):
         md5 = hashlib.md5()
         md5.update(self.b64_data)
         hash_code = md5.hexdigest()
-        new_filename = str(hash_code).lower()
-        image_full_path = os.path.join(local_image_path, new_filename) + '.' + self.image_type
+        new_filename = str(hash_code).lower() + '.' + self.image_type
+        image_full_path = os.path.join(local_image_path, new_filename)
         if not os.path.exists(image_full_path):
             with open(image_full_path, "wb") as f:
                 f.write(self.b64_data)
-        return image_full_path
+        return new_filename
 
 
 

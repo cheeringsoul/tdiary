@@ -100,7 +100,7 @@ def create_diary():
 @csrf.exempt
 def like():
     diary_id = request.form.get('id', None)
-    if diary_id is None:
+    if not diary_id:
         current_app.logger.error('get empty diary id')
         return ""
     if session.get('liked') == 1:
