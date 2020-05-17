@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 from marshmallow import ValidationError
 from flask import (
     Blueprint, flash, g, redirect, render_template,
@@ -33,13 +33,13 @@ def get_diary():
         for each in rv:
             diary, user = each
             if diary:
-                current_app.logger.info(diary.created_at)
                 result.append({
                     'created_at': diary.created_at,
                     'weather': diary.weather,
                     'content': diary.content,
                     'diary_id': diary.id,
                     'like': diary.like,
+                    'rewrite': diary.rewrite if diary.rewrite else '',
                     'username': user.name if user else "匿名用户",
                     "user_id": user.id if user else "",
                     'avatar': user.avatar if user else default_img
@@ -61,11 +61,33 @@ def get_diary():
 @bp.route('/create', methods=['get', 'post'])
 def create_diary():
     today = datetime.today()
-    date = f"{today.year}年{today.month}月{today.day}日"
-    if request.method == 'GET':
-        return render_template('diary.html', date=date)
     diary_type = request.args.get('diary_type', 1)
     diary_type = int(diary_type)
+    parent_diary_id = request.args.get('diary_id', None)
+    date = f"{today.year}年{today.month}月{today.day}日"
+    if request.method == 'GET':
+        result = []
+        if diary_type == DiaryType.ContinueDiary and parent_diary_id:
+            with open_db_session() as db_session:
+                rv = db_session.query(Diary, User).join(User, Diary.creator_id == User.id, isouter=True) \
+                    .filter(Diary.parent_id == parent_diary_id).order_by(Diary.created_at.desc()).all()
+                for each in rv:
+                    diary, user = each
+                    if diary:
+                        result.append({
+                            'created_at': diary.created_at,
+                            'weather': diary.weather,
+                            'content': diary.content,
+                            'diary_id': diary.id,
+                            'like': diary.like,
+                            'username': user.name if user else "匿名用户",
+                            "user_id": user.id if user else "",
+                            'avatar': user.avatar if user else default_img
+                        })
+        second_day, third_day = today+timedelta(days=1), today+timedelta(days=2)
+        return render_template('diary.html', diary_type=diary_type, date=date, diaries=result,
+                               second_day=second_day, third_day=third_day)
+
     if diary_type not in (DiaryType.NewDiary, DiaryType.ContinueDiary):
         current_app.logger.error(f'wrong diary type {diary_type}')
         return ""
@@ -82,10 +104,15 @@ def create_diary():
         if g.current_user:
             d.creator_id = g.current_user['id']
         d.diary_type = diary_type
-        if d.diary_type == DiaryType.ContinueDiary:
-            d.parent_id = request.args['diary_id']
         try:
             with open_db_session() as db_session:
+                if d.diary_type == DiaryType.ContinueDiary and parent_diary_id:
+                    d.parent_id = parent_diary_id
+                    if date == data['date']:
+                        parent_diary = db_session.query(Diary).get(parent_diary_id)
+                        d.created_at = parent_diary.created_at + timedelta(days=3)  # N天后
+                    else:
+                        d.created_at = data['date']
                 db_session.add(d)
                 db_session.commit()
         except Exception as e:

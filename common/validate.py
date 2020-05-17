@@ -1,3 +1,4 @@
+from datetime import datetime
 from marshmallow import fields, Schema, validates, ValidationError, pre_load, EXCLUDE
 
 
@@ -17,6 +18,7 @@ class SchemaSplit(Schema):
 
 class DiarySchema(SchemaSplit):
     weather = fields.Str(required=True)
+    date = fields.Str()
     diary_content = fields.Str(required=True, data_key='diary')
 
     @validates("weather")
@@ -28,6 +30,13 @@ class DiarySchema(SchemaSplit):
     def validate_weather(self, value):
         if len(value) > 300:
             raise ValidationError("length of weather should less than 5 char.")
+
+    @pre_load
+    def convert_date(self, data):
+        date = data['date']
+        if date != 'N':
+            data['date'] = datetime.strptime(date, '%Y-%m-%d')
+        return data
 
 
 def validate_password(value):

@@ -8,7 +8,7 @@ from sqlalchemy import Column, Integer, String, DateTime, ForeignKey
 from config import db_uri
 
 Base = declarative_base()
-engine = create_engine(db_uri, pool_size=2, max_overflow=0)
+engine = create_engine(db_uri, pool_size=2, max_overflow=0, pool_recycle=3600)
 Session = sessionmaker(bind=engine)
 
 
@@ -54,6 +54,7 @@ class Diary(Base):
     diary_type = Column(Integer, comment='日记类型 1新日记，2续写')
     parent_id = Column(Integer, ForeignKey("diary.id"))
     like = Column(Integer, comment='点赞数', default=0)
+    rewrite = Column(Integer, comment='续写数', default=0)
     creator_id = Column(Integer, ForeignKey("users.id"))
     created_at = Column(DateTime, default=datetime.utcnow)
 
