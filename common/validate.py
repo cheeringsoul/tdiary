@@ -1,5 +1,5 @@
 from datetime import datetime
-from marshmallow import fields, Schema, validates, ValidationError, pre_load, EXCLUDE
+from marshmallow import fields, Schema, validates, ValidationError, pre_load, post_load, EXCLUDE
 
 
 class SchemaSplit(Schema):
@@ -31,8 +31,8 @@ class DiarySchema(SchemaSplit):
         if len(value) > 300:
             raise ValidationError("length of weather should less than 5 char.")
 
-    @pre_load
-    def convert_date(self, data):
+    @post_load
+    def convert_date(self, data, *args, **kwargs):
         date = data['date']
         if date != 'N':
             data['date'] = datetime.strptime(date, '%Y-%m-%d')

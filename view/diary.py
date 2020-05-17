@@ -120,7 +120,7 @@ def create_diary():
             flash("服务器异常!")
         else:
             flash("发表成功.")
-        return redirect(url_for('diary.create_diary', diary_type=diary_type))
+        return render_template("message.html")
 
 
 @bp.route('/like', methods=['post'])
