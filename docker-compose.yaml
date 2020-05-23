@@ -7,7 +7,7 @@ services:
     environment:
       - DB_USER=root
       - DB_PASSWORD=12345678
-      - DB_HOST=192.168.8.3
+      - DB_HOST=localhost
       - DB_PORT=3306
       - DB_NAME=diary
       - LOGPATH=/app/log
@@ -17,6 +17,8 @@ services:
       - /Users/icheer/work/log:/app/log
     links:
       - redis
+    network:
+      "host"
     command: ["gunicorn", "--workers=4", "-b", "0.0.0.0:8888", "--reload", "app:application"]
 
   redis:
