@@ -17,8 +17,6 @@ services:
       - /Users/icheer/work/log:/app/log
     links:
       - redis
-    network:
-      "host"
     command: ["gunicorn", "--workers=4", "-b", "0.0.0.0:8888", "--reload", "app:application"]
 
   redis:

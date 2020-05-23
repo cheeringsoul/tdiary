@@ -15,6 +15,7 @@ services:
     volumes:
       - /root/work/diary_image:/app/files
       - /root/work/log:/app/log
+    network_mode: "host"
     command: ["gunicorn", "--workers=4", "-b", "0.0.0.0:8888", "app:application"]
 
   nginx:
