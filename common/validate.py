@@ -48,7 +48,7 @@ def validate_password(value):
     '!@#$%^&*()-_=+[{]};:",<.>/?
     """
     if len(value) > 16 or len(value) < 6:
-        raise ValidationError('密码长度必须在6到16之前')
+        raise ValidationError('密码长度必须在6到16之前!')
     for s in value:
         if s.isdigit():
             digital = 1
@@ -59,7 +59,7 @@ def validate_password(value):
         elif s in special_char_set:
             special_char = 1
     if sum([digital, lower, upper, special_char]) < 2:
-        raise ValidationError('密码必须包含数字、大写字母、小写字母、特殊字符至少两种')
+        raise ValidationError('密码必须包含数字、大写字母、小写字母、特殊字符至少两种!')
 
 
 class RegisterSchema(SchemaSplit):
