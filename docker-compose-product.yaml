@@ -7,7 +7,7 @@ services:
     environment:
       - DB_USER=root
       - DB_PASSWORD=my25267943y520
-      - DB_HOST=127.0.0.1
+      - DB_HOST=107.182.27.36
       - DB_PORT=3306
       - DB_NAME=diary
       - LOGPATH=/app/log
