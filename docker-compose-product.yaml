@@ -10,10 +10,11 @@ services:
       - DB_HOST=127.0.0.1
       - DB_PORT=3306
       - DB_NAME=diary
+      - LOGPATH=/app/log
       - SECRET_KEY=dksS7^Q1~)%(;m
     volumes:
       - /root/work/diary_image:/app/files
-      - .:/app/diary
+      - /root/work/log:/app/log
     command: ["gunicorn", "--workers=4", "-b", "0.0.0.0:8888", "app:application"]
 
   nginx:
