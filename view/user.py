@@ -83,7 +83,7 @@ def signup():
 
 @bp.route('/zone')
 def zone():
-    default_page_size = 3
+    default_page_size = 30
     user_id = request.args.get('user_id', '')
     user_id = user_id.strip()
     page_no = request.args.get('page_no', '0')

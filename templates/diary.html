@@ -13,7 +13,8 @@
       <div class="col-md-4">
           {% if diary_type==1 %}
           <div style="text-align:center">
-            <h3><small>日期&nbsp;&nbsp;{{ date }}</small></h3>
+            <h3><small>日期&nbsp;&nbsp;{{ today }}</small></h3>
+            <input type="hidden" name="date" value="{{ today_date|date }}"/>
           </div>
           {% else %}
           <div class="form-group">
@@ -73,4 +74,19 @@
     <hr style="margin-top: 6px;margin-bottom: 6px">
     {% endfor %}
     </div>
+{% endblock %}
+
+{% block script %}
+<script>
+  $(".like").click(function(){
+  $(this).children().css("color","red");
+    var value = $(this).attr('value')
+      $.ajax({
+          type: "POST",
+          url: "{{ url_for('diary.like')}}",
+          data: {'id':value},
+          dataType: 'json'
+      })
+  });
+</script>
 {% endblock %}

@@ -16,7 +16,7 @@ default_img = 'noimage.png'
 
 @bp.route('/')
 def get_diary():
-    default_page_size = 3
+    default_page_size = 30
     page_no = request.args.get('page_no', '0')
     if not page_no.isdigit():
         # 恶意数据
@@ -28,7 +28,7 @@ def get_diary():
     result = []
     with open_db_session() as db_session:
         rv = db_session.query(Diary, User).join(User, Diary.creator_id == User.id, isouter=True)\
-            .order_by(Diary.created_at.desc()) \
+            .order_by(Diary.created_at.desc(), Diary.like.desc()) \
             .limit(default_page_size).offset(page_no * default_page_size).all()
         for each in rv:
             diary, user = each
@@ -60,17 +60,17 @@ def get_diary():
 
 @bp.route('/create', methods=['get', 'post'])
 def create_diary():
-    today = datetime.today()
     diary_type = request.args.get('diary_type', 1)
     diary_type = int(diary_type)
     parent_diary_id = request.args.get('diary_id', None)
-    date = f"{today.year}年{today.month}月{today.day}日"
+    today = f"{datetime.today().year}年{datetime.today().month}月{datetime.today().day}日"
     if request.method == 'GET':
         result = []
+        second_day, third_day = '', ''
         if diary_type == DiaryType.ContinueDiary and parent_diary_id:
             with open_db_session() as db_session:
                 rv = db_session.query(Diary, User).join(User, Diary.creator_id == User.id, isouter=True) \
-                    .filter(Diary.parent_id == parent_diary_id).order_by(Diary.created_at.desc()).all()
+                    .filter(Diary.parent_id == parent_diary_id).order_by(Diary.created_at.asc(), Diary.like.desc()).all()
                 for each in rv:
                     diary, user = each
                     if diary:
@@ -84,9 +84,10 @@ def create_diary():
                             "user_id": user.id if user else "",
                             'avatar': user.avatar if user else default_img
                         })
-        second_day, third_day = today+timedelta(days=1), today+timedelta(days=2)
-        return render_template('diary.html', diary_type=diary_type, date=date, diaries=result,
-                               second_day=second_day, third_day=third_day)
+                rv = db_session.query(Diary).get(parent_diary_id)
+                second_day, third_day = rv.created_at+timedelta(days=1), rv.created_at+timedelta(days=2)
+        return render_template('diary.html', diary_type=diary_type, today=today, today_date=datetime.today(),
+                               diaries=result, second_day=second_day, third_day=third_day)
 
     if diary_type not in (DiaryType.NewDiary, DiaryType.ContinueDiary):
         current_app.logger.error(f'wrong diary type {diary_type}')
@@ -108,7 +109,7 @@ def create_diary():
             with open_db_session() as db_session:
                 if d.diary_type == DiaryType.ContinueDiary and parent_diary_id:
                     d.parent_id = parent_diary_id
-                    if date == data['date']:
+                    if data['date'] == 'N':
                         parent_diary = db_session.query(Diary).get(parent_diary_id)
                         d.created_at = parent_diary.created_at + timedelta(days=3)  # N天后
                     else:
@@ -130,9 +131,6 @@ def like():
     if not diary_id:
         current_app.logger.error('get empty diary id')
         return ""
-    if session.get('liked') == 1:
-        current_app.logger.warning('重复点赞')
-        return "已点赞"
     with open_db_session() as db_session:
         rv = db_session.query(Diary).get(diary_id)
         if not rv:
@@ -140,7 +138,6 @@ def like():
             return ""
         if not g.current_user:
             # 未登陆用户在cookie中标记liked，防止重复点赞
-            session['liked'] = 1
             rv.like = rv.like + 1
         else:
             user_id = g.current_user['id']
