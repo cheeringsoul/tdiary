@@ -84,10 +84,23 @@ def create_diary():
                             "user_id": user.id if user else "",
                             'avatar': user.avatar if user else default_img
                         })
-                rv = db_session.query(Diary).get(parent_diary_id)
-                second_day, third_day = rv.created_at+timedelta(days=1), rv.created_at+timedelta(days=2)
+                rv = db_session.query(Diary, User).join(User, Diary.creator_id == User.id, isouter=True) \
+                    .filter(Diary.id == parent_diary_id).first()
+                parent_diary, parent_diary_user = rv
+                second_day, third_day = parent_diary.created_at+timedelta(days=1), parent_diary.created_at+timedelta(days=2)
+                parent_diary_content = {
+                    'created_at': parent_diary.created_at,
+                    'weather': parent_diary.weather,
+                    'content': parent_diary.content,
+                    'diary_id': parent_diary.id,
+                    'like': parent_diary.like,
+                    'username': parent_diary_user.name if parent_diary_user else "匿名用户",
+                    "user_id": parent_diary_user.id if parent_diary_user else "",
+                    'avatar': parent_diary_user.avatar if parent_diary_user else default_img
+                }
+                result.insert(0, parent_diary_content)
         return render_template('diary.html', diary_type=diary_type, today=today, today_date=datetime.today(),
-                               diaries=result, second_day=second_day, third_day=third_day)
+                               diaries=result, second_day=second_day, third_day=third_day, parent_diary=parent_diary)
 
     if diary_type not in (DiaryType.NewDiary, DiaryType.ContinueDiary):
         current_app.logger.error(f'wrong diary type {diary_type}')
