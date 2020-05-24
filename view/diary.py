@@ -28,7 +28,7 @@ def get_diary():
     result = []
     with open_db_session() as db_session:
         rv = db_session.query(Diary, User).join(User, Diary.creator_id == User.id, isouter=True)\
-            .order_by(Diary.created_at.desc(), Diary.like.desc()) \
+            .filter(Diary.parent_diary==None).order_by(Diary.created_at.desc(), Diary.like.desc()) \
             .limit(default_page_size).offset(page_no * default_page_size).all()
         for each in rv:
             diary, user = each
@@ -122,8 +122,9 @@ def create_diary():
             with open_db_session() as db_session:
                 if d.diary_type == DiaryType.ContinueDiary and parent_diary_id:
                     d.parent_id = parent_diary_id
+                    parent_diary = db_session.query(Diary).get(parent_diary_id)
+                    parent_diary.rewrite += 1
                     if data['date'] == 'N':
-                        parent_diary = db_session.query(Diary).get(parent_diary_id)
                         d.created_at = parent_diary.created_at + timedelta(days=3)  # N天后
                     else:
                         d.created_at = data['date']
