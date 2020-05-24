@@ -18,8 +18,9 @@ services:
     command: ["gunicorn", "--workers=4", "-b", "0.0.0.0:8888", "app:application"]
 
   nginx:
-    image:
-      nginx:alpine
+    build:
+      context: .
+      dockerfile: NginxDockerfile
     ports:
       - "80:80"
     volumes:

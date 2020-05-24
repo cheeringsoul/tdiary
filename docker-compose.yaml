@@ -1,21 +1,21 @@
 version: '3.7'
 services:
-#  webapp:
-#    build:
-#      context: .
-#      dockerfile: Dockerfile
-#    environment:
-#      - DB_USER=root
-#      - DB_PASSWORD=12345678
-#      - DB_HOST=192.168.8.3
-#      - DB_PORT=3306
-#      - DB_NAME=diary
-#      - LOGPATH=/app/log
-#      - SECRET_KEY=dksS7^Q1~)%(;m
-#    volumes:
-#      - /Users/icheer/work/diary_image:/app/files
-#      - /Users/icheer/work/log:/app/log
-#    command: ["gunicorn", "--workers=4", "-b", "0.0.0.0:8888", "--reload", "app:application"]
+  webapp:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      - DB_USER=root
+      - DB_PASSWORD=12345678
+      - DB_HOST=192.168.8.3
+      - DB_PORT=3306
+      - DB_NAME=diary
+      - LOGPATH=/app/log
+      - SECRET_KEY=dksS7^Q1~)%(;m
+    volumes:
+      - /Users/icheer/work/diary_image:/app/files
+      - /Users/icheer/work/log:/app/log
+    command: ["gunicorn", "--workers=4", "-b", "0.0.0.0:8888", "--reload", "app:application"]
 
   nginx:
     build:
