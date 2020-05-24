@@ -76,6 +76,16 @@
 </html>
 <script src={{ url_for('static', filename='js/jquery.min.js') }}></script>
 <script src={{ url_for('static', filename='js/bootstrap.min.js') }}></script>
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?a346d0e3476a5dfdbd950214d66a1260";
+  var s = document.getElementsByTagName("script")[0];
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
 <link rel="stylesheet" type="text/css" href={{ url_for('static', filename='css/bootstrap.min.css') }}>
 <link rel="stylesheet" type="text/css" href={{ url_for('static', filename='css/third.css') }}>
 {% block script %}
