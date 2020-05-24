@@ -1,7 +1,10 @@
 ﻿{% extends "layout.html" %}
 {% block content %}
-<div class="row" style="width:800px; margin:auto">
+<div class="row">
+    <div class="col-md-3" style="text-align:right"></div>
+    <div class="col-md-6">
 {% for item in diaries %}
+        <div style="width:800px;margin: auto;">
     <div class="media">
       <div class="media-left" style="text-align: center;">
           {% if item['user_id'] %}
@@ -30,7 +33,14 @@
      </div>
     </div>
     <hr style="margin-top: 6px;margin-bottom: 6px">
+    </div>
     {% endfor %}
+    </div>
+    <div class="col-md-3">
+        <img src="/images/_data/QQ.jpeg" alt="..." style="width:150px">
+        <h3><small>QQ群号:305649322</small></h3>
+        <h3><small>微信群加:icheeringsoul</small></h3>
+    </div>
     </div>
 <nav aria-label="...">
   <ul class="pager">
