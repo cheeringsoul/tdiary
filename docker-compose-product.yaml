@@ -27,5 +27,6 @@ services:
       - /root/work/diary_image:/images_data
       - ./nginx:/etc/nginx/conf.d
       - ./static:/static_files
+      - /root/work/log:/root/log
     links:
       - webapp
