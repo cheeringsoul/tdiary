@@ -28,7 +28,7 @@ def get_diary():
     result = []
     with open_db_session() as db_session:
         rv = db_session.query(Diary, User).join(User, Diary.creator_id == User.id, isouter=True)\
-            .filter(Diary.parent_diary==None).order_by(Diary.created_at.desc(), Diary.like.desc()) \
+            .filter(Diary.diary_type == DiaryType.NewDiary).order_by(Diary.created_at.desc(), Diary.like.desc()) \
             .limit(default_page_size).offset(page_no * default_page_size).all()
         for each in rv:
             diary, user = each
