@@ -5,25 +5,37 @@
     <div class="container" style="width: 800px; background: #f4f4f4; ">
   <div class="col-md-4">
       <div style="text-align:center">
-        <h3><small>日记</small></h3>
+        <h3><small>舔狗日记</small></h3>
       </div>
   </div>
-  <div class="col-md-4">
-      <div style="text-align:center">
-        <h3><small>{{ date }}</small></h3>
+
+    <form action="#" method="post" class="form-inline">
+      <div class="col-md-4">
+          {% if diary_type==1 %}
+          <div style="text-align:center">
+            <h3><small>日期&nbsp;&nbsp;{{ today }}</small></h3>
+            <input type="hidden" name="date" value="{{ today_date|date }}"/>
+          </div>
+          {% else %}
+          <div class="form-group">
+                  <label for="dateSelect"><h3><small>日期</small></h3></label>
+          <select id="dateSelect" class="form-control" name="date">
+            <option value={{ second_day|date }}>第二天</option>
+              <option value={{ third_day|date }}>第三天</option>
+              <option value="N">第N天</option>
+          </select>
+        </div>
+          {% endif %}
       </div>
-  </div>
-    <form action="#" method="post">
         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
           <div class="col-md-4">
               <div style="text-align:center">
                  <h3>
-                     <small>天气
+                     <small>天气&nbsp;&nbsp;
                         <input name="weather" maxlength="5" type="text" class="form-control" required style="width:auto;height:auto;padding:2px;display: inherit;">
                      </small>
                  </h3>
               </div>
-
           </div>
           <textarea name="diary" maxlength="300" data-minheight="70" tabindex="1" id="isay-cont" rows="1" style="height: 100px; width: 100%;" required></textarea>
           <div style="float: right; padding-bottom: 10px">
@@ -31,4 +43,50 @@
     </div>
     </form>
 </div>
+<div class="row" style="width:800px; margin:auto; padding-top:30px">
+<hr style="margin-top: 6px;margin-bottom: 6px">
+{% for item in diaries %}
+    <div class="media">
+      <div class="media-left" style="text-align: center;">
+          {% if item['user_id'] %}
+            <a href={{ url_for('account.zone', user_id=item['user_id']) }}>
+              <img class="avatar media-object img-circle" src="{{ '/images/_data/'+item['avatar'] }}" alt="...">
+            </a>
+          {% else %}
+          <img class="avatar media-object img-circle" src="{{ '/images/_data/'+item['avatar'] }}" alt="...">
+          {% endif %}
+
+      </div>
+      <div class="media-body">
+          <h5 style="margin-top:0px; margin-bottom:0px"><small>{{ item['username'] }}</small></h5>
+        <h5 class="media-heading" style="padding-bottom:25px">
+            <small style="font-size: initial;padding-left:80px;float:right">{{ item['weather'] }}</small>
+            <small style="font-size: initial;float:right">{{ item['created_at']|date }}</small>
+        </h5>
+          <p>{{ item['content'] }}</p>
+      </div>
+        <div class="btn-group " role="group" style="float:right; margin-top: 15px">
+      <button type="button" class="btn btn-default like" value="{{ item['diary_id'] }}">
+          <span class="glyphicon glyphicon-thumbs-up" aria-hidden="true"></span>&nbsp&nbsp{{ item['like'] }}
+      </button>
+     </div>
+    </div>
+    <hr style="margin-top: 6px;margin-bottom: 6px">
+    {% endfor %}
+    </div>
+{% endblock %}
+
+{% block script %}
+<script>
+  $(".like").click(function(){
+  $(this).children().css("color","red");
+    var value = $(this).attr('value')
+      $.ajax({
+          type: "POST",
+          url: "{{ url_for('diary.like')}}",
+          data: {'id':value},
+          dataType: 'json'
+      })
+  });
+</script>
 {% endblock %}

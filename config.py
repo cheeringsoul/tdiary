@@ -10,7 +10,7 @@ dictConfig({
     }},
     'handlers': {'tdiary': {
         'class': "logging.handlers.RotatingFileHandler",
-        'filename': 'tdiary.log',
+        'filename': os.path.join(os.environ.get('LOGPATH'), 'tdiary.log'),
         'maxBytes': 1024*1024*10,
         'backupCount': 5,
         'mode': 'w',

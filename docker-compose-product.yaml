@@ -6,16 +6,16 @@ services:
       dockerfile: Dockerfile
     environment:
       - DB_USER=root
-      - DB_PASSWORD=12345678
-      - DB_HOST=192.168.8.3
+      - DB_PASSWORD=my25267943y520
+      - DB_HOST=107.182.27.36
       - DB_PORT=3306
       - DB_NAME=diary
       - LOGPATH=/app/log
       - SECRET_KEY=dksS7^Q1~)%(;m
     volumes:
-      - /Users/icheer/work/diary_image:/app/files
-      - /Users/icheer/work/log:/app/log
-    command: ["gunicorn", "--workers=4", "-b", "0.0.0.0:8888", "--reload", "app:application"]
+      - /root/work/diary_image:/app/files
+      - /root/work/log:/app/log
+    command: ["gunicorn", "--workers=4", "-b", "0.0.0.0:8888", "app:application"]
 
   nginx:
     build:
@@ -24,6 +24,8 @@ services:
     ports:
       - "80:80"
     volumes:
-      - /Users/icheer/work/diary_image:/images_data
+      - /root/work/diary_image:/images_data
+      - ./nginx:/etc/nginx/conf.d
       - ./static:/static_files
-
+    links:
+      - webapp

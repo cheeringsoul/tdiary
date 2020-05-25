@@ -39,6 +39,7 @@
   };
 
   Fileinput.prototype.change = function(e) {
+
     var files = e.target.files === undefined ? (e.target && e.target.value ? [{ name: e.target.value.replace(/^.+\\/, '')}] : []) : e.target.files;
     
     e.stopPropagation();
@@ -72,7 +73,10 @@
         preview.html($img);
         element.addClass('fileinput-exists').removeClass('fileinput-new');
 
-        element.trigger('change.bs.fileinput', files)
+        element.trigger('change.bs.fileinput', files);
+            var data = $("#new_img").children().attr("src");
+            $("#image_base64").attr('value', data);
+
       };
 
       reader.readAsDataURL(file)
@@ -84,6 +88,7 @@
       
       this.$element.trigger('change.bs.fileinput')
     }
+
   };
 
   Fileinput.prototype.clear = function(e) {
@@ -153,7 +158,6 @@
     var $this = $(this);
     if ($this.data('bs.fileinput')) return;
     $this.fileinput($this.data());
-      
     var $target = $(e.target).closest('[data-dismiss="fileinput"],[data-trigger="fileinput"]');
     if ($target.length > 0) {
       e.preventDefault();

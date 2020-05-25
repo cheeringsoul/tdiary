@@ -1,0 +1,4 @@
+FROM nginx:1.17
+COPY templates/404.html /usr/share/nginx/html
+COPY templates/baidu_verify_ZsWRG6x1zb.html /usr/share/nginx/html
+COPY nginx /etc/nginx/conf.d

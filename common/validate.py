@@ -1,4 +1,5 @@
-from marshmallow import fields, Schema, validates, ValidationError, pre_load, EXCLUDE
+from datetime import datetime
+from marshmallow import fields, Schema, validates, ValidationError, pre_load, post_load, EXCLUDE
 
 
 class SchemaSplit(Schema):
@@ -17,6 +18,7 @@ class SchemaSplit(Schema):
 
 class DiarySchema(SchemaSplit):
     weather = fields.Str(required=True)
+    date = fields.Str()
     diary_content = fields.Str(required=True, data_key='diary')
 
     @validates("weather")
@@ -29,6 +31,13 @@ class DiarySchema(SchemaSplit):
         if len(value) > 300:
             raise ValidationError("length of weather should less than 5 char.")
 
+    @post_load
+    def convert_date(self, data, *args, **kwargs):
+        date = data['date']
+        if date != 'N':
+            data['date'] = datetime.strptime(date, '%Y-%m-%d')
+        return data
+
 
 def validate_password(value):
     digital = 0
@@ -39,7 +48,7 @@ def validate_password(value):
     '!@#$%^&*()-_=+[{]};:",<.>/?
     """
     if len(value) > 16 or len(value) < 6:
-        raise ValidationError('密码长度必须在6到16之前')
+        raise ValidationError('密码长度必须在6到16之前!')
     for s in value:
         if s.isdigit():
             digital = 1
@@ -50,7 +59,7 @@ def validate_password(value):
         elif s in special_char_set:
             special_char = 1
     if sum([digital, lower, upper, special_char]) < 2:
-        raise ValidationError('密码必须包含数字、大写字母、小写字母、特殊字符至少两种')
+        raise ValidationError('密码必须包含数字、大写字母、小写字母、特殊字符至少两种!')
 
 
 class RegisterSchema(SchemaSplit):

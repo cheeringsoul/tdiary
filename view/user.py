@@ -83,7 +83,7 @@ def signup():
 
 @bp.route('/zone')
 def zone():
-    default_page_size = 3
+    default_page_size = 30
     user_id = request.args.get('user_id', '')
     user_id = user_id.strip()
     page_no = request.args.get('page_no', '0')
@@ -98,13 +98,10 @@ def zone():
         user = db_session.query(User).get(user_id)
         if not user:
             abort(404, description="Resource not found")
-
         rv = db_session.query(Diary).order_by(Diary.created_at.desc()) \
             .limit(default_page_size).offset(page_no * default_page_size).all()
     if len(rv) == 0:
-
         flash("没有更多数据了!")
-
     if len(rv) < default_page_size:
         next_page = -1
     else:
@@ -113,30 +110,39 @@ def zone():
         pre_page = -1
     else:
         pre_page = page_no - 1
-
     if g.current_user and int(user_id) == g.current_user['id']:
         # 当前登录用户查看自己个人空间
         private = 1
     else:
         # 访问他人空间
         private = 0
-    return render_template('my_diary.html', diaries=rv, next_page=next_page, pre_page=pre_page,
-                           avatar=user.avatar, user_id=user_id, private=private)
+    return render_template('zone.html', diaries=rv, next_page=next_page, pre_page=pre_page,
+                           avatar=user.avatar, username=user.name, user_id=user_id, private=private)
 
 
-@bp.route('/upload', methods=['POST'])
-@csrf.exempt
-def upload():
-    image_base64 = request.form.get('avatar')
+@bp.route('/update-avatar', methods=['POST', 'GET'])
+def update_avatar():
+    if request.method == 'GET':
+        if not g.current_user:
+            flash("请先登陆!")
+        with open_db_session() as db_session:
+            rv = db_session.query(User).get(g.current_user['id'])
+            avatar = rv.avatar
+        return render_template('update_avatar.html', avatar=avatar)
+    image_base64 = request.form.get('image_base64')
     if not image_base64:
         return "图片不能为空"
-
     image = ImageBase64Storage(image_base64)
     if not image.check_image_type():
-        flash("图片格式不对")
-        return render_template('')  # todo
-    image_uri = image.save()
-    return image_uri
+        flash("图片格式不对!")
+        return render_template('update_avatar.html')
+    image_name = image.save()
+    with open_db_session() as db_session:
+        rv = db_session.query(User).get(g.current_user['id'])
+        rv.avatar = image_name
+        db_session.commit()
+    flash("修改成功.")
+    return render_template('message.html')
 
 
 @bp.route('/update-password', methods=['POST', 'GET'])
@@ -144,7 +150,7 @@ def update_password():
     if request.method == 'GET':
         if not g.current_user:
             flash('请先登陆!')
-        return render_template('password.html')
+        return render_template('update_password.html')
     if not g.current_user:
         return '请先登录'
     try:
@@ -152,32 +158,35 @@ def update_password():
     except ValidationError as e:
         for _, value in e.messages.items():
             flash(value[0])
-            return render_template('password.html')
+            return render_template('update_password.html')
     else:
         with open_db_session() as db_session:
             user = db_session.query(User).get(g.current_user['id'])
-            if not check_password_hash(data['old_password'], user.password):
-                flash('密码不正确')
-                return render_template('password.html')
+            if not check_password_hash(user.password, data['old_password']):
+                flash('密码不正确!')
+                return render_template('update_password.html')
             user.password = generate_password_hash(data['new_password'])
             db_session.commit()
+        flash("修改成功.")
+        return render_template('message.html')
 
 
 @bp.route('/update-profile', methods=['GET', 'POST'])
-def update_username():
+def update_profile():
     if request.method == 'GET':
         if not g.current_user:
             flash('请先登录!')
-        return render_template('profile.html')  # todo
+        return render_template('basic_profile.html')
     if not g.current_user:
         return "请先登录!"
     new_name = request.form.get('new_name', '').strip()
     if not new_name:
         flash("用户名不能为空!")
-        return render_template('profile.html')
+        return render_template('basic_profile.html')
     with open_db_session() as db_session:
         user = db_session.query(User).get(g.current_user['id'])
         user.name = new_name
         db_session.commit()
     flash("修改成功.")
+    save_current_user({'id': g.current_user['id'], 'name': new_name})
     return render_template('message.html')
