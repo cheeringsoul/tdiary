@@ -67,6 +67,7 @@ def create_diary():
     if request.method == 'GET':
         result = []
         second_day, third_day = '', ''
+        parent_diary = []
         if diary_type == DiaryType.ContinueDiary and parent_diary_id:
             with open_db_session() as db_session:
                 rv = db_session.query(Diary, User).join(User, Diary.creator_id == User.id, isouter=True) \
