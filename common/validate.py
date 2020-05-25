@@ -70,7 +70,7 @@ class RegisterSchema(SchemaSplit):
 
     @validates('username')
     def validate_username(self, value):
-        if len(value) > 8:
+        if len(value) > 10:
             raise ValidationError('length of username should less than 9 char.')
 
     @validates('password')
