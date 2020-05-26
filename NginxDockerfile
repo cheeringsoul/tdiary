@@ -1,5 +1,4 @@
-FROM nginx:1.17
+FROM nginx:alpine
 RUN mkdir /root/log
-COPY templates/404.html /usr/share/nginx/html
-COPY templates/baidu_verify_ZsWRG6x1zb.html /usr/share/nginx/html
+COPY templates/404.html templates/baidu_verify_ZsWRG6x1zb.html /usr/share/nginx/html
 COPY nginx /etc/nginx/conf.d
