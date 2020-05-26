@@ -2,7 +2,7 @@ from datetime import datetime, timedelta
 from marshmallow import ValidationError
 from flask import (
     Blueprint, flash, g, redirect, render_template,
-    url_for, current_app, session, request, abort
+    url_for, current_app, request, abort
 )
 
 from common.validate import DiarySchema
