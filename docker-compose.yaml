@@ -26,4 +26,5 @@ services:
     volumes:
       - /Users/icheer/work/diary_image:/images_data
       - ./static:/static_files
+      - /tmp/log:/root/log
 
