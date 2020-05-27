@@ -86,6 +86,8 @@ def zone():
     default_page_size = 30
     user_id = request.args.get('user_id', '')
     user_id = user_id.strip()
+    if not user_id:
+        abort(404)
     page_no = request.args.get('page_no', '0')
     if not page_no.isdigit():
         # 恶意数据
@@ -98,7 +100,7 @@ def zone():
         user = db_session.query(User).get(user_id)
         if not user:
             abort(404, description="Resource not found")
-        rv = db_session.query(Diary).order_by(Diary.created_at.desc()) \
+        rv = db_session.query(Diary).filter_by(creator_id=user_id).order_by(Diary.created_at.desc()) \
             .limit(default_page_size).offset(page_no * default_page_size).all()
     if len(rv) == 0:
         flash("没有更多数据了!")
